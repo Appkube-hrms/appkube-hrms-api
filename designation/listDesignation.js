@@ -5,11 +5,9 @@ const { errorHandler } = require("../util/errorHandler");
 const org_id = '482d8374-fca3-43ff-a638-02c8a425c492';
 
 exports.handler = middy(async () => {
-    console.log("log :",org_id)
     console.info("info :",org_id)
-    console.warn("warn :",org_id)
-    console.error("error :",org_id)
     const client = await connectToDatabase();
+    console.info("connected to database :", JSON.stringify(client))
     const query = `
                         SELECT 
                             id, designation
@@ -18,7 +16,9 @@ exports.handler = middy(async () => {
                         WHERE
                             org_id = $1::uuid`;
     const result = await client.query(query, [org_id]);
+    console.info("query result :", JSON.stringify(result.rows))
     if (result.rowCount > 0) {
+        console.info("greater than zero :", JSON.stringify(result.rows))
         return {
             statusCode: 200,
             headers: {
@@ -27,6 +27,7 @@ exports.handler = middy(async () => {
             body: JSON.stringify(result.rows),
         };
     } else {
+        console.info("less than zero :", JSON.stringify(result.rows))
         return {
             statusCode: 200,
             headers: {
