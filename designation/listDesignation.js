@@ -4,7 +4,7 @@ const { errorHandler } = require("../util/errorHandler");
 
 const org_id = "482d8374-fca3-43ff-a638-02c8a425c492";
 
-const letDesignations = async (event) => {
+const handler = async (event) => {
 	console.info("info :", org_id);
 	const client = await connectToDatabase();
 	console.info("connected to database :", JSON.stringify(client));
@@ -26,7 +26,7 @@ const letDesignations = async (event) => {
 	};
 };
 
-const handler = middy(letDesignations)
+// const handler = middy(letDesignations)
                 // .use(errorHandler());
 
 module.exports = { handler}
