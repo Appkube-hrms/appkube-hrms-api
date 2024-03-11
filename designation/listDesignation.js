@@ -2,9 +2,9 @@ const { connectToDatabase } = require("../db/dbConnector");
 const middy = require("middy");
 const { errorHandler } = require("../util/errorHandler");
 
-const org_id = "146f03b7-3c87-40b3-87bf-080739dfabee";
+const org_id = "482d8374-fca3-43ff-a638-02c8a425c492";
 
-exports.handler = middy(async (event) => {
+const letDesignations = async (event) => {
 	console.info("info :", org_id);
 	const client = await connectToDatabase();
 	console.info("connected to database :", JSON.stringify(client));
@@ -25,4 +25,9 @@ exports.handler = middy(async (event) => {
 		},
 		body: JSON.stringify(result.rows),
 	};
-}).use(errorHandler());
+};
+
+const handler = middy(letDesignations)
+                .use(errorHandler());
+                
+module.exports = { handler}
