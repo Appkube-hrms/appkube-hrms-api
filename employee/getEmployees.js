@@ -12,7 +12,8 @@ exports.handler = middy(async (event) => {
     let offset = (page - 1) * 10;
     offset = Math.max(offset, 0);
     const client = await connectToDatabase();
-    console.log(offset);
+    console.info("connected to database :", JSON.stringify(client))
+    console.log("offset :",offset);
     const totalPagesQuery = `
                 SELECT COUNT(*) AS total_count
                 FROM employee e
@@ -42,9 +43,11 @@ exports.handler = middy(async (event) => {
                 LIMIT 10 OFFSET ${offset}
     `;
     const totalPagesResult = await client.query(totalPagesQuery);
+    console.info("query result 1:", JSON.stringify(totalPagesResult.rows))
     const totalRecords = totalPagesResult.rows[0].total_count;
     const totalPages = Math.ceil(totalRecords / limit);
     const employeeMetaData = await client.query(query);
+    console.info("query result 2:", JSON.stringify(employeeMetaData.rows))
     const resultArray = employeeMetaData.rows.map((row) => ({
         employee_name: `${row.first_name} ${row.last_name}`,
         id: row.id,
@@ -54,7 +57,7 @@ exports.handler = middy(async (event) => {
         department: row.department,
         start_date: row.start_date,
     }));
-
+    console.info("result array", JSON.stringify(resultArray))
     return {
         statusCode: 200,
         headers: {
