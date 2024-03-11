@@ -1,8 +1,14 @@
 const { connectToDatabase } = require("../db/dbConnector");
 const middy = require("middy");
 const { errorHandler } = require("../util/errorHandler");
+
+const org_id = '482d8374-fca3-43ff-a638-02c8a425c492';
+
 exports.handler = middy(async () => {
-    const org_id = '482d8374-fca3-43ff-a638-02c8a425c492';
+    console.log("log :",org_id)
+    console.info("info :",org_id)
+    console.warn("warn :",org_id)
+    console.error("error :",org_id)
     const client = await connectToDatabase();
     const query = `
                         SELECT 

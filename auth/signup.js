@@ -70,7 +70,6 @@ exports.handler = middy(async (event, context) => {
 	try {
 		const command = new SignUpCommand(input);
 		const signupResponse = await cognitoClient.send(command);
-        console.log(JSON.stringify(signupResponse))
 		await client.query("BEGIN");
 		await client.query(
 			`INSERT INTO organisation(id) VALUES ($1)`,
