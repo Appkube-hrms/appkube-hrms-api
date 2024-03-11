@@ -28,4 +28,5 @@ functions:
     - ${file(./organization/function.yml)}
     - ${file(./designation/function.yml)}
     - ${file(./upload/function.yml)}
+    - ${file(./delete/function.yml)}
     
