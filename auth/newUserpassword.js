@@ -69,7 +69,7 @@ exports.handler = async (event, context) => {
             newPasswordResponse.AuthenticationResult.RefreshToken;
  
         return {
-            statusCode: 200,
+            statusCode: 301,
             headers: {
                 "Access-Control-Allow-Origin": "*",
                 "Location": "https://workflow.synectiks.net/"
