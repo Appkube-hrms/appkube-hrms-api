@@ -16,7 +16,6 @@ const letDesignations = async (event) => {
                         WHERE
                             org_id = $1::uuid`;
 	const result = await client.query(query, [org_id]);
-	console.info("query result :", JSON.stringify(result.rows));
 	console.info("greater than zero :", JSON.stringify(result.rows));
 	return {
 		statusCode: 200,
@@ -28,6 +27,6 @@ const letDesignations = async (event) => {
 };
 
 const handler = middy(letDesignations)
-                .use(errorHandler());
-                
+                // .use(errorHandler());
+
 module.exports = { handler}
