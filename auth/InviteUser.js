@@ -20,7 +20,7 @@ const cognitoClient = new CognitoIdentityProviderClient({
 	region: "us-east-1",
 });
 
-const empDetailsQuery = `SELECT work_email, org_id 
+const empDetailsQuery = `SELECT work_email, org_id ,id
                         FROM employee 
                         WHERE id = $1;`;
 
@@ -34,6 +34,7 @@ exports.handler = middy(async (event) => {
 	const employeeId = event.pathParameters?.id ?? null;
 	const client = await connectToDatabase();
 	const empDetailsResult = await client.query(empDetailsQuery, [employeeId]);
+	const emp_id = empDetailsResult.rows[0].id;
 	const org_id = empDetailsResult.rows[0].org_id;
 	const work_email = empDetailsResult.rows[0].work_email;
 	const password = generatePassword.generate({
@@ -44,10 +45,11 @@ exports.handler = middy(async (event) => {
 		lowercase: true,
 		excludeSimilarCharacters: true,
 	});
+	const password1 = password.replace(/["]/g, 'X');
 	const input = {
 		UserPoolId: process.env.COGNITO_POOL_ID,
 		Username: work_email,
-		TemporaryPassword: password,
+		TemporaryPassword: password1,
 		UserAttributes: [
 			{
 				Name: "custom:org_id",
@@ -55,7 +57,7 @@ exports.handler = middy(async (event) => {
 			},
 			{
 				Name: "custom:user_id",
-				Value: employeeId,
+				Value: emp_id,
 			},
 			{
 				Name: "custom:role",

@@ -38,7 +38,7 @@ exports.handler = middy(async (event) => {
 	const authResponse = await cognitoClient.send(
 		new InitiateAuthCommand(input)
 	);
-	console.log(JSON.stringify(authResponse));
+	//console.log(JSON.stringify(authResponse));
 	const accessToken = authResponse.AuthenticationResult.IdToken;
 	const refreshToken = authResponse.AuthenticationResult.RefreshToken;
 	// const idToken = authResponse.AuthenticationResult.IdToken;
