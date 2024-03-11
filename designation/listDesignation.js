@@ -1,13 +1,11 @@
 const { connectToDatabase } = require("../db/dbConnector");
 const middy = require("middy");
 const { errorHandler } = require("../util/errorHandler");
-
 const org_id = "482d8374-fca3-43ff-a638-02c8a425c492";
 
-const handler = async (event) => {
-	console.info("info :", org_id);
+const letDesignations = async (event, context) => {
+	context.callbackWaitsForEmptyEventLoop = false;
 	const client = await connectToDatabase();
-	console.info("connected to database :", JSON.stringify(client));
 	const query = `
                         SELECT 
                             id, designation
@@ -16,7 +14,6 @@ const handler = async (event) => {
                         WHERE
                             org_id = $1::uuid`;
 	const result = await client.query(query, [org_id]);
-	console.info("greater than zero :", JSON.stringify(result.rows));
 	return {
 		statusCode: 200,
 		headers: {
@@ -26,7 +23,6 @@ const handler = async (event) => {
 	};
 };
 
-// const handler = middy(letDesignations)
-                // .use(errorHandler());
+const handler = middy(letDesignations).use(errorHandler());
 
-module.exports = { handler}
+module.exports = { handler };
