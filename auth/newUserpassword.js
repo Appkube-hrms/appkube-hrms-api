@@ -72,10 +72,10 @@ exports.handler = async (event, context) => {
             statusCode: 200,
             headers: {
                 "Access-Control-Allow-Origin": "*",
+                "Location": "https://workflow.synectiks.net/"
             },
             body: JSON.stringify({
-                message: "Successfully Signed-up",
-                AccessToken: accessToken,
+                message: " Password-Reset Successfully ",
             }),
         };
     } catch (error) {
