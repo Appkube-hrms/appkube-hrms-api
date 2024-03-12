@@ -1,0 +1,8 @@
+deleteEmployee:
+    handler: delete/deleteEmployee.handler
+    role: ${env:LAMBDA_ROLE}
+    events:
+        - http:
+              path: /deleteEmployee/{emp_id}
+              method: delete
+              cors: true
