@@ -12,7 +12,8 @@ const reqSchema = z.object({
 	data: z.string(),
 });
 
-exports.handler = middy(async (event) => {
+exports.handler = middy(async (event,context) => {
+	context.callbackWaitsForEmptyEventLoop = false;
 	const body = JSON.parse(event.body);
 	const fileName = body.fileName;
 	const data = body.data;

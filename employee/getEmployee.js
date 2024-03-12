@@ -7,7 +7,8 @@ const idSchema = z.object({
     id: z.string().uuid({ message: "Invalid employee id" }),
 });
  
-exports.handler = middy(async (event) => {
+exports.handler = middy(async (event,context) => {
+	context.callbackWaitsForEmptyEventLoop = false;
     const employeeId = event.pathParameters?.id ?? null;
     const client = await connectToDatabase();
  

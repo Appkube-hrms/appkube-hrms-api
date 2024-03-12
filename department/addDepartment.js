@@ -15,7 +15,8 @@ const reqSchema = z.object({
 	}),
 });
 
-exports.handler = middy(async (event) => {
+exports.handler = middy(async (event,context) => {
+	context.callbackWaitsForEmptyEventLoop = false;
 	const { name } = JSON.parse(event.body);
 	const client = await connectToDatabase();
 	const result = await client.query(

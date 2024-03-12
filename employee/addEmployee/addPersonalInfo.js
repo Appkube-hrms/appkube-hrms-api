@@ -26,7 +26,8 @@ const requestBodySchema = z.object({
     image: z.string().optional().default("")
 });
 
-exports.handler = middy(async (event) => {
+exports.handler = middy(async (event,context) => {
+	context.callbackWaitsForEmptyEventLoop = false;
 	const requestBody = JSON.parse(event.body);
 	const org_id = "482d8374-fca3-43ff-a638-02c8a425c492";
 	const currentTimestamp = new Date().toISOString();

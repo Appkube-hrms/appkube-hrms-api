@@ -1,7 +1,8 @@
 const { connectToDatabase } = require("../db/dbConnector");
 const { z } = require("zod");
 
-exports.handler = async (event, context, callback) => {
+exports.handler = async (event,context) => {
+	context.callbackWaitsForEmptyEventLoop = false;
 	const requestBody = JSON.parse(event.body);
 	const organisationSchema = z.object({
 		name: z
