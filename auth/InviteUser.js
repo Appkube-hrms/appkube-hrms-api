@@ -20,7 +20,7 @@ const cognitoClient = new CognitoIdentityProviderClient({
 	region: "us-east-1",
 });
 
-const empDetailsQuery = `SELECT work_email, org_id 
+const empDetailsQuery = `SELECT work_email, org_id
                         FROM employee 
                         WHERE id = $1;`;
 
@@ -45,10 +45,11 @@ exports.handler = middy(async (event,context) => {
 		lowercase: true,
 		excludeSimilarCharacters: true,
 	});
+	const password1 = password.replace(/["]/g, 'X');
 	const input = {
 		UserPoolId: process.env.COGNITO_POOL_ID,
 		Username: work_email,
-		TemporaryPassword: password,
+		TemporaryPassword: password1,
 		UserAttributes: [
 			{
 				Name: "custom:org_id",
