@@ -2,7 +2,8 @@ const { connectToDatabase } = require("../db/dbConnector");
 const middy = require("middy");
 const { errorHandler } = require("../util/errorHandler");
 
-exports.handler = middy(async (event) => {
+exports.handler = middy(async (event, context) => {
+    context.callbackWaitsForEmptyEventLoop = false;
     let page = event.queryStringParameters?.page ?? null;
     if (page == null) {
         page = 1;
@@ -12,7 +13,6 @@ exports.handler = middy(async (event) => {
     let offset = (page - 1) * 10;
     offset = Math.max(offset, 0);
     const client = await connectToDatabase();
-    console.log(offset);
     const totalPagesQuery = `
                 SELECT COUNT(*) AS total_count
                 FROM employee e
@@ -54,7 +54,6 @@ exports.handler = middy(async (event) => {
         department: row.department,
         start_date: row.start_date,
     }));
-
     return {
         statusCode: 200,
         headers: {

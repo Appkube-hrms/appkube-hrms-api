@@ -8,7 +8,8 @@ const nameSchema = z.object({
     name:z.string({ message: "Invalid employee name" }),
 })
 
-exports.handler = middy(async (event) => {
+exports.handler = middy(async (event,context) => {
+	context.callbackWaitsForEmptyEventLoop = false;
     const params = event.queryStringParameters?.name ?? null;
     const client = await connectToDatabase();
         const query = `

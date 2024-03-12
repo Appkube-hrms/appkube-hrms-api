@@ -11,6 +11,7 @@ const reqSchema = z.object({
 });
 
 exports.handler = middy(async (event, context) => {
+    context.callbackWaitsForEmptyEventLoop = false;
     const requestBody = JSON.parse(event.body);
     const req = {
         email: requestBody.email

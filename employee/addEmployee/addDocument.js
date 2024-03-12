@@ -15,7 +15,8 @@ const requestBodySchema = z.object({
 	})),
 });
 
-exports.handler = middy(async (event) => {
+exports.handler = middy(async (event,context) => {
+	context.callbackWaitsForEmptyEventLoop = false;
     const requestBody = JSON.parse(event.body);
 
     const addDocumentQuery = {

@@ -25,7 +25,7 @@ const cognitoClient = new CognitoIdentityProviderClient({
 });
 
 exports.handler = middy(async (event, context) => {
-    context.callbackWaitsForEmptyEventLoop = false;
+  context.callbackWaitsForEmptyEventLoop = false;
 	const requestBody = JSON.parse(event.body);
 	const req = {
 		email: requestBody.email,
@@ -71,7 +71,6 @@ exports.handler = middy(async (event, context) => {
 	try {
 		const command = new SignUpCommand(input);
 		const signupResponse = await cognitoClient.send(command);
-        //console.log(JSON.stringify(signupResponse))
 		await client.query("BEGIN");
 		await client.query(
 			`INSERT INTO organisation(id) VALUES ($1)`,

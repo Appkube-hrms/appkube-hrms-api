@@ -2,7 +2,8 @@ const { connectToDatabase } = require("../db/dbConnector");
 const middy = require("middy");
 const { errorHandler } = require("../util/errorHandler");
 
-exports.handler = middy(async (event) => {
+exports.handler = middy(async (event,context) => {
+	context.callbackWaitsForEmptyEventLoop = false;
     let page = event.queryStringParameters?.page ?? null;
     if (page == null) {
         page = 1;

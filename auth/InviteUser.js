@@ -31,7 +31,7 @@ const updateInvitationStatus = `
                         RETURNING invitation_status ;`;
 
 exports.handler = middy(async (event,context) => {
-    context.callbackWaitsForEmptyEventLoop = false;
+	context.callbackWaitsForEmptyEventLoop = false;
 	const employeeId = event.pathParameters?.id ?? null;
 	const client = await connectToDatabase();
 	const empDetailsResult = await client.query(empDetailsQuery, [employeeId]);
