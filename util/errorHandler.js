@@ -3,9 +3,22 @@ const {
 	NotAuthorizedException,
     UsernameExistsException
 } = require("@aws-sdk/client-cognito-identity-provider");
+const { AuthorizationError } = require("./authorizer");
 
 exports.errorHandler = () => ({
 	onError: (handler, next) => {
+		if (handler.error instanceof AuthorizationError) {
+			handler.response = {
+				statusCode: 403,
+				headers: {
+					"Access-Control-Allow-Origin": "*",
+				},
+				body: JSON.stringify({
+					message: "unauthorised request",
+				}),
+			};
+			next();
+		}
 		if (handler.error instanceof UserNotConfirmedException) {
 			handler.response = {
 				statusCode: 403,

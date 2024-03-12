@@ -38,7 +38,7 @@ async function validateToken(token) {
 	});
 }
 
-exports.authorize = () => ({
+const authorize = () => ({
 	before: async (handler, next) => {
 		const { event } = handler;
 		const authHeader =
@@ -56,3 +56,7 @@ exports.authorize = () => ({
 	},
 });
 
+module.exports = {
+	AuthorizationError,
+	authorize
+}
