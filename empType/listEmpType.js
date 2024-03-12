@@ -6,7 +6,8 @@ const { corsMiddleware } = require("../util/corsMiddleware");
 
 const org_id = "482d8374-fca3-43ff-a638-02c8a425c492";
 
-exports.handler = middy(async () => {
+exports.handler = middy(async (event,context) => {
+	context.callbackWaitsForEmptyEventLoop = false;
 	const client = await connectToDatabase();
 	const query = `
                 SELECT 

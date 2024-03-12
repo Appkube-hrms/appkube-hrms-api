@@ -11,7 +11,8 @@ const reqSchema = z.object({
 		message: "type must be at least 3 characters long",
 	}),
 });
-exports.handler = middy(async (event) => {
+exports.handler = middy(async (event,context) => {
+	context.callbackWaitsForEmptyEventLoop = false;
 	const { type } = JSON.parse(event.body);
 	const client = await connectToDatabase();
 	const result = await client.query(

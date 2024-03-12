@@ -1,6 +1,7 @@
 const { connectToDatabase } = require("../db/dbConnector");
 
-exports.handler = async (event) => {
+exports.handler = async (event,context) => {
+    context.callbackWaitsForEmptyEventLoop = false;
     const client = await connectToDatabase();
     try {
         const countQuery = `
