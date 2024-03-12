@@ -17,9 +17,8 @@ exports.handler = middy(async (event, context) => {
                 statusCode: 200,
                 headers: {
                     "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
                 },
-                body: JSON.stringify({ message: "contend not available" }),
+                body: JSON.stringify({ message: "content not available" }),
             };
         }
         return {
