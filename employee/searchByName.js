@@ -1,9 +1,9 @@
 const { connectToDatabase } = require("../db/dbConnector");
 const { z } = require("zod");
 const middy = require("middy");
+const { authorize } = require("../util/authorizer");
 const { errorHandler } = require("../util/errorHandler");
 const { queryParamsValidator } = require("../util/queryParamsValidator");
-const { authorize } = require("../util/authorizer");
 
 const nameSchema = z.object({
     name:z.string({ message: "Invalid employee name" }),
@@ -55,6 +55,6 @@ exports.handler = middy(async (event,context) => {
         };
     
 })
-    .use(queryParamsValidator(nameSchema))
     .use(authorize())
+    .use(queryParamsValidator(nameSchema))
 	.use(errorHandler());

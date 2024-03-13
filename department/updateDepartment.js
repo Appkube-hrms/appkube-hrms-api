@@ -1,9 +1,9 @@
 const { connectToDatabase } = require("../db/dbConnector");
 const { z } = require("zod");
 const middy = require("middy");
+const { authorize } = require("../util/authorizer");
 const { errorHandler } = require("../util/errorHandler");
 const { bodyValidator } = require("../util/bodyValidator");
-const { authorize } = require("../util/authorizer");
 
 const DepartmentSchema = z.object({
     name: z.string().min(3, { message: "Department name must be at least 3 characters long" }),
@@ -41,6 +41,6 @@ exports.handler = middy(async (event,context) => {
         };
 
 })
-   .use(bodyValidator(DepartmentSchema))
    .use(authorize())
+   .use(bodyValidator(DepartmentSchema))
    .use(errorHandler());

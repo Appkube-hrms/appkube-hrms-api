@@ -1,9 +1,9 @@
 const { connectToDatabase } = require("../db/dbConnector");
 const { z } = require("zod");
 const middy = require("middy");
+const { authorize } = require("../util/authorizer");
 const { errorHandler } = require("../util/errorHandler");
 const { bodyValidator } = require("../util/bodyValidator");
-const { authorize } = require("../util/authorizer");
 
 const org_id = "482d8374-fca3-43ff-a638-02c8a425c492";
 
@@ -29,6 +29,6 @@ exports.handler = middy(async (event,context) => {
 		body: JSON.stringify(insertedEmptype),
 	};
 })
-	.use(bodyValidator(reqSchema))
 	.use(authorize())
+	.use(bodyValidator(reqSchema))
 	.use(errorHandler());

@@ -1,7 +1,7 @@
 const { connectToDatabase } = require("../db/dbConnector");
 const { z } = require("zod");
-const { errorHandler } = require("../util/errorHandler");
 const { authorize } = require("../util/authorizer");
+const { errorHandler } = require("../util/errorHandler");
 const { bodyValidator } = require("../util/bodyValidator");
 
 const organisationSchema = z.object({
@@ -90,6 +90,6 @@ exports.handler = middy(async (event,context) => {
 		await client.end();
 	}
 })
-	.use(bodyValidator(organisationSchema))
 	.use(authorize())
-	.use(errorHandler())
+	.use(bodyValidator(organisationSchema))
+	.use(errorHandler());

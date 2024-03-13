@@ -1,10 +1,10 @@
 require("dotenv").config();
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const middy = require("middy");
+const { authorize } = require("../util/authorizer");
 const { errorHandler } = require("../util/errorHandler");
 const { bodyValidator } = require("../util/bodyValidator");
 const { z } = require("zod");
-const { authorize } = require("../util/authorizer");
 
 const s3Client = new S3Client({ region: "us-east-1" });
 
@@ -42,8 +42,8 @@ exports.handler = middy(async (event,context) => {
 		body: JSON.stringify({ link }),
 	};
 })
-	.use(bodyValidator(reqSchema))
 	.use(authorize())
+	.use(bodyValidator(reqSchema))
 	.use(errorHandler());
 
 const formatFileName = (fileName, fileExtension) => {

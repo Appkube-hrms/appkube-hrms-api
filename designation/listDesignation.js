@@ -1,7 +1,7 @@
 const { connectToDatabase } = require("../db/dbConnector");
 const middy = require("middy");
-const { errorHandler } = require("../util/errorHandler");
 const { authorize } = require("../util/authorizer");
+const { errorHandler } = require("../util/errorHandler");
 const org_id = "482d8374-fca3-43ff-a638-02c8a425c492";
 
 const letDesignations = async (event, context) => {
@@ -24,6 +24,6 @@ const letDesignations = async (event, context) => {
 	};
 };
 
-const handler = middy(letDesignations).use(errorHandler()).use(authorize());
+const handler = middy(letDesignations).use(authorize()).use(errorHandler());
 
 module.exports = { handler };

@@ -1,7 +1,7 @@
 const { connectToDatabase } = require("../db/dbConnector");
 const middy = require("middy");
-const { errorHandler } = require("../util/errorHandler");
 const { authorize } = require("../util/authorizer");
+const { errorHandler } = require("../util/errorHandler");
 
 exports.handler = middy(async (event,context) => {
 	context.callbackWaitsForEmptyEventLoop = false;
@@ -65,5 +65,5 @@ exports.handler = middy(async (event,context) => {
         }),
     };
 })  
-    .use(errorHandler())
-    .use(authorize());
+    .use(authorize())
+    .use(errorHandler());
