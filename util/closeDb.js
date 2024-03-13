@@ -1,6 +1,4 @@
-const { MiddlewareFunction, NextFunction } = require('middy');
-
-const closeDb = () => {
+exports.closeDb = () => {
   return {
     after: async (handler, next) => {
       const { client } = handler.context;
@@ -13,5 +11,3 @@ const closeDb = () => {
     },
   };
 };
-
-module.exports = { closeDb };

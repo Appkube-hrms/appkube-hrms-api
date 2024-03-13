@@ -1,7 +1,7 @@
 const { connectToDatabase } = require("../db/dbConnector");
 const middy = require("middy");
 const { errorHandler } = require("../util/errorHandler");
-const { closeDb } = require("../util/closeDB");
+const { closeDb } = require("../util/closeDb");
 
 exports.handler = middy(async (event, context) => {
 	const client = await connectToDatabase();
