@@ -1,10 +1,11 @@
 const { connectToDatabase } = require("../db/dbConnector");
 const middy = require("middy");
 const { errorHandler } = require("../util/errorHandler");
-const { closeDb } = require("../util/closeDb");
 
 exports.handler = middy(async (event, context) => {
+
 	const client = await connectToDatabase();
+	
 	const countQuery = `
         SELECT
             (
@@ -18,6 +19,8 @@ exports.handler = middy(async (event, context) => {
 	const employeeCount = countResult.rows[0].employee_count;
 	const projectCount = countResult.rows[0].project_count;
 
+	await client.end();
+
 	return {
 		statusCode: 200,
 		headers: {
@@ -30,4 +33,3 @@ exports.handler = middy(async (event, context) => {
 	};
 })
 	.use(errorHandler())
-	.use(closeDb());
