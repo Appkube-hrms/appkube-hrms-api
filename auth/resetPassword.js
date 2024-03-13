@@ -7,10 +7,9 @@ const { bodyValidator } = require("../util/bodyValidator");
 
 const reqSchema = z.object({
     email: z.string().email(),
-    confirmationCode: z.string(),
-    newPassword: z.string()
+    otp: z.string(),
+    newPassword: z.string() 
 });
-
 exports.handler = middy(async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     const requestBody = JSON.parse(event.body);
@@ -19,7 +18,6 @@ exports.handler = middy(async (event, context) => {
         confirmationCode: requestBody.otp.trim(),
         newPassword: requestBody.newPassword
     };
-
     const client = new CognitoIdentityProviderClient({ region: "us-east-1" });
     const input = {
         ClientId: process.env.COGNITO_CLIENT_ID,
