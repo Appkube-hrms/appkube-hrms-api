@@ -1,8 +1,10 @@
 const { connectToDatabase } = require("../db/dbConnector");
 const { z } = require("zod");
 const middy = require("middy");
+const { authorize } = require("../util/authorizer");
 const { errorHandler } = require("../util/errorHandler");
 const { pathParamsValidator } = require("../util/pathParamsValidator");
+
 const idSchema = z.object({
     id: z.string().uuid({ message: "Invalid employee id" }),
 });
@@ -65,7 +67,8 @@ exports.handler = middy(async (event,context) => {
         },
         body: JSON.stringify(formattedResult),
     };
-})
+})  
+    .use(authorize())
     .use(pathParamsValidator(idSchema))
     .use(errorHandler());
  

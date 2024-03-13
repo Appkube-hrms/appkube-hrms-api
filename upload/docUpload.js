@@ -1,6 +1,7 @@
 require("dotenv").config();
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const middy = require("middy");
+const { authorize } = require("../util/authorizer");
 const { errorHandler } = require("../util/errorHandler");
 const { bodyValidator } = require("../util/bodyValidator");
 const { z } = require("zod");
@@ -41,6 +42,7 @@ exports.handler = middy(async (event,context) => {
 		body: JSON.stringify({ link }),
 	};
 })
+	.use(authorize())
 	.use(bodyValidator(reqSchema))
 	.use(errorHandler());
 

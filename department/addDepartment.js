@@ -1,9 +1,9 @@
 const { connectToDatabase } = require("../db/dbConnector");
 const { z } = require("zod");
 const middy = require("middy");
+const { authorize } = require("../util/authorizer");
 const { errorHandler } = require("../util/errorHandler");
 const { bodyValidator } = require("../util/bodyValidator");
-const { authorize } = require("../util/authorizer");
 const { corsMiddleware } = require("../util/corsMiddleware");
 
 

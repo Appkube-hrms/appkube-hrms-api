@@ -1,5 +1,6 @@
 const { connectToDatabase } = require("../db/dbConnector");
 const middy = require("middy");
+const { authorize } = require("../util/authorizer");
 const { errorHandler } = require("../util/errorHandler");
 
 exports.handler = middy(async (event, context) => {
@@ -28,4 +29,6 @@ exports.handler = middy(async (event, context) => {
             },
             body: JSON.stringify({message: "resource deleted successfully"})
         };
-}).use(errorHandler());
+})  
+    .use(authorize())    
+    .use(errorHandler());
