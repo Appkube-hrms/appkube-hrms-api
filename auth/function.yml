@@ -15,7 +15,7 @@ signin:
               method: post
               cors: true
 
-userSignup:
+inviteUser:
     handler: auth/inviteUser.handler
     role: ${env:LAMBDA_ROLE}
     events:
