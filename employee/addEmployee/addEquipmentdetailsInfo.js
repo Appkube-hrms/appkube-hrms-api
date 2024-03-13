@@ -3,6 +3,7 @@ const { z } = require("zod");
 const middy = require("middy");
 const { errorHandler } = require("../../util/errorHandler");
 const { bodyValidator } = require("../../util/bodyValidator");
+const { authorize } = require("../../util/authorizer");
 
 const requestBodySchema = z.array(z.object({
 	owner: z.boolean({
@@ -73,4 +74,5 @@ exports.handler = middy(async (event,context) => {
 	}
 })
 .use(bodyValidator(requestBodySchema))
+.use(authorize())
 .use(errorHandler());

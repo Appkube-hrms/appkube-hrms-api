@@ -4,6 +4,7 @@ const middy = require("middy");
 const { errorHandler } = require("../util/errorHandler");
 const { bodyValidator } = require("../util/bodyValidator");
 const { z } = require("zod");
+const { authorize } = require("../util/authorizer");
 
 const s3Client = new S3Client({ region: "us-east-1" });
 
@@ -42,6 +43,7 @@ exports.handler = middy(async (event,context) => {
 	};
 })
 	.use(bodyValidator(reqSchema))
+	.use(authorize())
 	.use(errorHandler());
 
 const formatFileName = (fileName, fileExtension) => {

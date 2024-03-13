@@ -3,6 +3,7 @@ const { z } = require("zod");
 const middy = require("middy");
 const { errorHandler } = require("../util/errorHandler");
 const { queryParamsValidator } = require("../util/queryParamsValidator");
+const { authorize } = require("../util/authorizer");
 
 const nameSchema = z.object({
     name:z.string({ message: "Invalid employee name" }),
@@ -55,4 +56,5 @@ exports.handler = middy(async (event,context) => {
     
 })
     .use(queryParamsValidator(nameSchema))
+    .use(authorize())
 	.use(errorHandler());

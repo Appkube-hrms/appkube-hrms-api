@@ -3,6 +3,7 @@ const { z } = require("zod");
 const middy = require("middy");
 const { errorHandler } = require("../util/errorHandler");
 const { bodyValidator } = require("../util/bodyValidator");
+const { authorize } = require("../util/authorizer");
 
 const DesignationSchema = z.object({
     designation: z.string().min(3, { message: "designation name must be at least 3 characters long" }),
@@ -41,4 +42,5 @@ exports.handler = middy(async (event,context) => {
 
 })
    .use(bodyValidator(DesignationSchema))
+   .use(authorize())
    .use(errorHandler());

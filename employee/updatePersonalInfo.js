@@ -4,6 +4,7 @@ const middy = require("middy");
 const { errorHandler } = require("../util/errorHandler");
 const { bodyValidator } = require("../util/bodyValidator");
 const { pathParamsValidator } = require("../util/pathParamsValidator");
+const { authorize } = require("../util/authorizer");
 
 const idSchema = z.object({
     id: z.string().uuid({ message: "Invalid employee id" }),
@@ -115,4 +116,5 @@ exports.handler = middy(async (event,context) => {
 })
     .use(pathParamsValidator(idSchema))
     .use(bodyValidator(requestBodySchema))
+    .use(authorize())
     .use(errorHandler());

@@ -3,6 +3,7 @@ const { z } = require("zod");
 const middy = require("middy");
 const { errorHandler } = require("../util/errorHandler");
 const { bodyValidator } = require("../util/bodyValidator");
+const { authorize } = require("../util/authorizer");
 
 const EmpTypeSchema = z.object({
     type: z.string().min(3, { message: "type name must be at least 3 characters long" }),
@@ -41,4 +42,5 @@ exports.handler = middy(async (event,context) => {
 
 })
    .use(bodyValidator(EmpTypeSchema))
+   .use(authorize())
    .use(errorHandler());

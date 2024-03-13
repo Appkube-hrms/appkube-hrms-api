@@ -1,51 +1,42 @@
 const { connectToDatabase } = require("../db/dbConnector");
 const { z } = require("zod");
+const { errorHandler } = require("../util/errorHandler");
+const { authorize } = require("../util/authorizer");
+const { bodyValidator } = require("../util/bodyValidator");
 
-exports.handler = async (event,context) => {
+const organisationSchema = z.object({
+	name: z
+		.string({
+			message: "company name should be atleast 3 character long",
+		})
+		.min(3),
+	email: z.string().email({ message: "Invalid email address" }),
+	number: z
+		.string({
+			message:
+				"Invalid phone number format. Should be a valid phone number format",
+		})
+		.regex(
+			/^(\+\d{1,2}\s?)?(\(\d{3}\)\s?\d{3}(-|\s?)\d{4}|\d{10}(-|\s?)\d{4}|\d{7,11})$/
+		),
+	logo: z.string().default(""),
+	address_line_1: z.string(),
+	address_line_2: z.string(),
+	landmark: z.string().optional(),
+	country: z.string(),
+	state: z.string({
+		message: "State is required",
+	}),
+	city: z.string(),
+	zipcode: z.string().regex(/^\d{6}$/),
+	orgId: z.string().uuid({
+		message: "invalid request",
+	}),
+});
+
+exports.handler = middy(async (event,context) => {
 	context.callbackWaitsForEmptyEventLoop = false;
 	const requestBody = JSON.parse(event.body);
-	const organisationSchema = z.object({
-		name: z
-			.string({
-				message: "company name should be atleast 3 character long",
-			})
-			.min(3),
-		email: z.string().email({ message: "Invalid email address" }),
-		number: z
-			.string({
-				message:
-					"Invalid phone number format. Should be a valid phone number format",
-			})
-			.regex(
-				/^(\+\d{1,2}\s?)?(\(\d{3}\)\s?\d{3}(-|\s?)\d{4}|\d{10}(-|\s?)\d{4}|\d{7,11})$/
-			),
-		logo: z.string().default(""),
-		address_line_1: z.string(),
-		address_line_2: z.string(),
-		landmark: z.string().optional(),
-		country: z.string(),
-		state: z.string({
-			message: "State is required",
-		}),
-		city: z.string(),
-		zipcode: z.string().regex(/^\d{6}$/),
-		orgId: z.string().uuid({
-			message: "invalid request",
-		}),
-	});
-	const validReq = organisationSchema.safeParse(requestBody);
-	console.log(JSON.stringify(requestBody));
-	if (!validReq.success) {
-		return {
-			statusCode: 400,
-			headers: {
-				"Access-Control-Allow-Origin": "*",
-			},
-			body: JSON.stringify({
-				error: validReq.error.formErrors.fieldErrors,
-			}),
-		};
-	}
 	const client = await connectToDatabase();
 	try {
 		const res = await client.query(
@@ -98,4 +89,7 @@ exports.handler = async (event,context) => {
 	} finally {
 		await client.end();
 	}
-};
+})
+	.use(bodyValidator(organisationSchema))
+	.use(authorize())
+	.use(errorHandler())
