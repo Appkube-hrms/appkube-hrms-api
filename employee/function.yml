@@ -51,3 +51,11 @@ deleteEmployee:
               path: /employee/{id}
               method: delete
               cors: true
+inviteUser:
+    handler: employee/inviteUser.handler
+    role: ${env:LAMBDA_ROLE}
+    events:
+        - http:
+              path: /invite/{id}
+              method: get
+              cors: true
