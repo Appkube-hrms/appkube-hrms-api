@@ -42,3 +42,12 @@ employeeTracker:
               path: /employee/tracker
               method: get 
               cors: true
+
+deleteEmployee:
+    handler: employee/deleteEmployee.handler
+    role: ${env:LAMBDA_ROLE}
+    events:
+        - http:
+              path: /employee/{id}
+              method: delete
+              cors: true
