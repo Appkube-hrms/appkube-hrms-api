@@ -39,4 +39,13 @@ newUserpassword:
         - http:
               path: /newUserpassword
               method: post
-              cors: true                                 
+              cors: true  
+
+refreshToken:
+    handler: auth/refreshToken.handler
+    role: ${env:LAMBDA_ROLE}
+    events:
+        - http:
+              path: /refreshToken
+              method: put
+              cors: true                                             
