@@ -15,14 +15,6 @@ signin:
               method: post
               cors: true
 
-inviteUser:
-    handler: auth/inviteUser.handler
-    role: ${env:LAMBDA_ROLE}
-    events:
-        - http:
-              path: /invite/{id}
-              method: post
-              cors: true
 forgotPassword:
     handler: auth/forgotPassword.handler
     role: ${env:LAMBDA_ROLE}
@@ -48,3 +40,12 @@ newUserpassword:
               path: /newUserpassword
               method: post
               cors: true                                 
+
+inviteUser:
+    handler: auth/inviteUser.handler
+    role: ${env:LAMBDA_ROLE}
+    events:
+        - http:
+              path: /invite/{id}
+              method: get
+              cors: true
