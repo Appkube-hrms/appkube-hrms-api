@@ -33,6 +33,10 @@ const updateInvitationStatus = `
 exports.handler = middy(async (event,context) => {
 	context.callbackWaitsForEmptyEventLoop = false;
 	const employeeId = event.pathParameters?.id ?? null;
+	let status = event.queryStringParameters?.invitation_status ?? null;
+	if (!status || status !== "SCHEDULED") {
+		status = "SENT";
+	}	
 	const client = await connectToDatabase();
 	const empDetailsResult = await client.query(empDetailsQuery, [employeeId]);
 	const org_id = empDetailsResult.rows[0].org_id;
@@ -44,6 +48,7 @@ exports.handler = middy(async (event,context) => {
 		symbols: true,
 		lowercase: true,
 		excludeSimilarCharacters: true,
+		strict: true
 	});
 	const password1 = password.replace(/["]/g, 'X');
 	const input = {
@@ -79,7 +84,7 @@ exports.handler = middy(async (event,context) => {
 		await cognitoClient.send(
 			new AdminAddUserToGroupCommand(addUserToGroupParams)
 		);
-		await client.query(updateInvitationStatus, ["SENT", employeeId]);
+		await client.query(updateInvitationStatus, [status, employeeId]);
 		console.log("3");
 		return {
 			statusCode: 200,
@@ -91,6 +96,7 @@ exports.handler = middy(async (event,context) => {
 		};
 	} catch (error) {
         console.log(error);
+		if (error.name !== 'UsernameExistsException') {
 		const params = {
 			UserPoolId: process.env.COGNITO_POOL_ID,
 			Username: work_email,
@@ -99,6 +105,7 @@ exports.handler = middy(async (event,context) => {
 		await cognitoClient.send(new AdminDeleteUserCommand(params));
 		console.log("5");
 		throw error;
+	}
 	}
 })
 	.use(pathParamsValidator(idSchema))
