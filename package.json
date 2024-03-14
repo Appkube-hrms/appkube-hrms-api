@@ -10,6 +10,7 @@
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.515.0",
     "@aws-sdk/client-s3": "^3.525.0",
+    "@aws-sdk/client-scheduler": "^3.533.0",
     "@aws-sdk/client-secrets-manager": "^3.470.0",
     "dotenv": "^16.4.5",
     "generate-password": "^1.7.1",

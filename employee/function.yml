@@ -59,3 +59,11 @@ inviteUser:
               path: /invite/{id}
               method: get
               cors: true
+scheduleInvite:
+    handler: employee/scheduleInvite.handler
+    role: ${env:LAMBDA_ROLE}
+    events:
+        - http:
+              path: /schedule
+              method: post
+              cors: true
