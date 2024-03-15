@@ -67,3 +67,11 @@ scheduleInvite:
               path: /schedule
               method: post
               cors: true
+deleteInvite:
+    handler: employee/deleteInvite.handler
+    role: ${env:LAMBDA_ROLE}
+    events:
+        - http:
+              path: /deleteinvite
+              method: delete
+              cors: true
