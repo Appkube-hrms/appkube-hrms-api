@@ -24,7 +24,7 @@ exports.handler = middy(async (event, context) => {
 
     const insertInviteQuery = "INSERT INTO invite (employee_id, scheduler, scheduled_time) VALUES ($1, $2, $3);"
 
-    inputPrams = {
+    const inputPrams = {
         timestamp: requestBody.timestamp,
         pathParameters: {
             id: requestBody.id
