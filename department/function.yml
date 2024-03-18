@@ -5,7 +5,7 @@ addDepartment:
         - http:
               path: /department
               method: post
-            #   cors: true
+              #   cors: true
 
 listDepartment:
     handler: department/listDepartment.handler
@@ -14,7 +14,7 @@ listDepartment:
         - http:
               path: /department
               method: get
-            #   cors: true
+              #   cors: true
 
 updateDepartment:
     handler: department/updateDepartment.handler
@@ -23,4 +23,4 @@ updateDepartment:
         - http:
               path: /department
               method: put
-            #   cors: true                            
+              #   cors: true

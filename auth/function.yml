@@ -22,7 +22,7 @@ forgotPassword:
         - http:
               path: /forgotpassword
               method: post
-              cors: true    
+              cors: true
 resetPassword:
     handler: auth/resetPassword.handler
     role: ${env:LAMBDA_ROLE}
@@ -30,7 +30,7 @@ resetPassword:
         - http:
               path: /resetpassword
               method: post
-              cors: true  
+              cors: true
 
 newUserpassword:
     handler: auth/newUserpassword.handler
@@ -39,7 +39,7 @@ newUserpassword:
         - http:
               path: /newUserpassword
               method: post
-              cors: true  
+              cors: true
 
 refreshToken:
     handler: auth/refreshToken.handler
@@ -48,4 +48,4 @@ refreshToken:
         - http:
               path: /refreshToken
               method: put
-              cors: true                                             
+              cors: true

@@ -31,7 +31,7 @@ updatePersonalInfo:
     events:
         - http:
               path: /employee/{id}
-              method: put 
+              method: put
               cors: true
 
 employeeTracker:
@@ -40,7 +40,7 @@ employeeTracker:
     events:
         - http:
               path: /employee/tracker
-              method: get 
+              method: get
               cors: true
 
 deleteEmployee:

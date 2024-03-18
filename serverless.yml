@@ -13,10 +13,10 @@ provider:
     runtime: nodejs18.x
     region: us-east-1
     environment:
-      COGNITO_CLIENT_ID : ${env:COGNITO_CLIENT_ID}
-      COGNITO_POOL_ID : ${env:COGNITO_POOL_ID}
-      BUCKET_NAME : ${env:BUCKET_NAME}
-      BUCKET_FOLDER_NAME : ${env:BUCKET_FOLDER_NAME}
+        COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID}
+        COGNITO_POOL_ID: ${env:COGNITO_POOL_ID}
+        BUCKET_NAME: ${env:BUCKET_NAME}
+        BUCKET_FOLDER_NAME: ${env:BUCKET_FOLDER_NAME}
 
 functions:
     - ${file(./auth/function.yml)}
@@ -28,4 +28,3 @@ functions:
     - ${file(./organization/function.yml)}
     - ${file(./designation/function.yml)}
     - ${file(./upload/function.yml)}
-    

@@ -1,9 +1,9 @@
 const {
 	UserNotConfirmedException,
 	NotAuthorizedException,
-    UsernameExistsException
-} = require("@aws-sdk/client-cognito-identity-provider");
-const { AuthorizationError } = require("./authorizer");
+	UsernameExistsException,
+} = require("@aws-sdk/client-cognito-identity-provider")
+const { AuthorizationError } = require("./authorizer")
 
 exports.errorHandler = () => ({
 	onError: (handler, next) => {
@@ -16,8 +16,8 @@ exports.errorHandler = () => ({
 				body: JSON.stringify({
 					message: "unauthorised request",
 				}),
-			};
-			next();
+			}
+			next()
 		}
 		if (handler.error instanceof UserNotConfirmedException) {
 			handler.response = {
@@ -28,8 +28,8 @@ exports.errorHandler = () => ({
 				body: JSON.stringify({
 					message: "email not verified",
 				}),
-			};
-			next();
+			}
+			next()
 		}
 		if (handler.error instanceof NotAuthorizedException) {
 			handler.response = {
@@ -40,10 +40,10 @@ exports.errorHandler = () => ({
 				body: JSON.stringify({
 					message: "Incorrect username or password.",
 				}),
-			};
-			next();
+			}
+			next()
 		}
-        if (handler.error instanceof UsernameExistsException) {
+		if (handler.error instanceof UsernameExistsException) {
 			handler.response = {
 				statusCode: 401,
 				headers: {
@@ -52,8 +52,8 @@ exports.errorHandler = () => ({
 				body: JSON.stringify({
 					message: "user already exists.",
 				}),
-			};
-			next();
+			}
+			next()
 		}
 		handler.response = {
 			statusCode: 500,
@@ -64,7 +64,7 @@ exports.errorHandler = () => ({
 				message: handler.error.message,
 				error: handler.error,
 			}),
-		};
-		next();
+		}
+		next()
 	},
-});
+})

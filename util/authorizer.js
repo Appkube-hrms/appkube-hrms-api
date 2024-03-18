@@ -1,27 +1,27 @@
-const jwt = require("jsonwebtoken");
-const jwksClient = require("jwks-rsa");
-const cognitoIssuer = `https://cognito-idp.us-east-1.amazonaws.com/${process.env.COGNITO_POOL_ID}`;
+const jwt = require("jsonwebtoken")
+const jwksClient = require("jwks-rsa")
+const cognitoIssuer = `https://cognito-idp.us-east-1.amazonaws.com/${process.env.COGNITO_POOL_ID}`
 
 const client = jwksClient({
 	jwksUri: `${cognitoIssuer}/.well-known/jwks.json`,
-});
+})
 
 class AuthorizationError extends Error {
 	constructor(message) {
-		super(message);
-		this.name = "AuthorizationError";
+		super(message)
+		this.name = "AuthorizationError"
 
 		if (typeof Error.captureStackTrace === "function") {
-			Error.captureStackTrace(this, this.constructor);
+			Error.captureStackTrace(this, this.constructor)
 		} else {
-			this.stack = new Error(message).stack;
+			this.stack = new Error(message).stack
 		}
 	}
 }
 
 async function validateToken(token) {
-	const decodedToken = jwt.decode(token, { complete: true, json: true });
-	const key = await client.getSigningKey(decodedToken.header.kid);
+	const decodedToken = jwt.decode(token, { complete: true, json: true })
+	const key = await client.getSigningKey(decodedToken.header.kid)
 	return new Promise((resolve, reject) => {
 		jwt.verify(
 			token,
@@ -29,33 +29,33 @@ async function validateToken(token) {
 			{ issuer: cognitoIssuer },
 			(err, decoded) => {
 				if (err) {
-					reject(err);
+					reject(err)
 				} else {
-					resolve(decoded);
+					resolve(decoded)
 				}
-			}
-		);
-	});
+			},
+		)
+	})
 }
 
 const authorize = () => ({
 	before: async (handler, next) => {
-		const { event } = handler;
+		const { event } = handler
 		const authHeader =
-			event.headers.Authorization || event.headers.authorization;
+			event.headers.Authorization || event.headers.authorization
 		if (!authHeader) {
-			throw new AuthorizationError("no authorization header provided");
+			throw new AuthorizationError("no authorization header provided")
 		}
 		if (!authHeader.startsWith("Bearer ")) {
-			throw new AuthorizationError("invalid authorization header format");
+			throw new AuthorizationError("invalid authorization header format")
 		}
-		const token = authHeader.substring(7);
-		await validateToken(token);
-		next();
+		const token = authHeader.substring(7)
+		await validateToken(token)
+		next()
 	},
-});
+})
 
 module.exports = {
 	AuthorizationError,
-	authorize
+	authorize,
 }

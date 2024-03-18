@@ -1,31 +1,31 @@
-require("dotenv").config();
-const { connectToDatabase } = require("../db/dbConnector");
-const { z } = require("zod");
+require("dotenv").config()
+const { connectToDatabase } = require("../db/dbConnector")
+const { z } = require("zod")
 const {
 	CognitoIdentityProviderClient,
 	InitiateAuthCommand,
-} = require("@aws-sdk/client-cognito-identity-provider");
-const middy = require("middy");
-const { errorHandler } = require("../util/errorHandler");
-const { bodyValidator } = require("../util/bodyValidator");
-const jwt = require("jsonwebtoken");
+} = require("@aws-sdk/client-cognito-identity-provider")
+const middy = require("middy")
+const { errorHandler } = require("../util/errorHandler")
+const { bodyValidator } = require("../util/bodyValidator")
+const jwt = require("jsonwebtoken")
 
 const reqSchema = z.object({
 	email: z.string().email(),
 	password: z.string(),
-});
+})
 
 const cognitoClient = new CognitoIdentityProviderClient({
 	region: "us-east-1",
-});
+})
 
-exports.handler = middy(async (event,context) => {
-	context.callbackWaitsForEmptyEventLoop = false;
-	const requestBody = JSON.parse(event.body);
+exports.handler = middy(async (event, context) => {
+	context.callbackWaitsForEmptyEventLoop = false
+	const requestBody = JSON.parse(event.body)
 	const req = {
 		email: requestBody.email,
 		password: requestBody.password,
-	};
+	}
 
 	const input = {
 		ClientId: process.env.COGNITO_CLIENT_ID,
@@ -34,18 +34,18 @@ exports.handler = middy(async (event,context) => {
 			USERNAME: req.email,
 			PASSWORD: req.password,
 		},
-	};
+	}
 
 	const authResponse = await cognitoClient.send(
-		new InitiateAuthCommand(input)
-	);
+		new InitiateAuthCommand(input),
+	)
 	//console.log(JSON.stringify(authResponse));
-	const accessToken = authResponse.AuthenticationResult.IdToken;
-	const refreshToken = authResponse.AuthenticationResult.RefreshToken;
+	const accessToken = authResponse.AuthenticationResult.IdToken
+	const refreshToken = authResponse.AuthenticationResult.RefreshToken
 	// const idToken = authResponse.AuthenticationResult.IdToken;
-    const tokenDetails = jwt.decode(accessToken, { complete: true, json: true });
-    const userId = tokenDetails.payload['custom:user_id'];
-	const client = await connectToDatabase();
+	const tokenDetails = jwt.decode(accessToken, { complete: true, json: true })
+	const userId = tokenDetails.payload["custom:user_id"]
+	const client = await connectToDatabase()
 	await client.query(
 		`
 	            UPDATE employee
@@ -53,13 +53,12 @@ exports.handler = middy(async (event,context) => {
 	                refresh_token = $2
 	            WHERE
 	                work_email = $3`,
-		[accessToken, refreshToken, req.email]
-	);
-	const res = await client.query(
-		`SELECT * FROM employee WHERE id = $1`,
-		[userId]
-	);
-	const result = res.rows[0];
+		[accessToken, refreshToken, req.email],
+	)
+	const res = await client.query(`SELECT * FROM employee WHERE id = $1`, [
+		userId,
+	])
+	const result = res.rows[0]
 	const PersonalDetails = {
 		id: result.id || "",
 		email: result.email || "",
@@ -78,7 +77,7 @@ exports.handler = middy(async (event,context) => {
 		org_id: result.org_id || "",
 		image: result.image || "",
 		email_verified: result.email_verified || "",
-	};
+	}
 	return {
 		statusCode: 200,
 		headers: {
@@ -89,7 +88,7 @@ exports.handler = middy(async (event,context) => {
 			AccessToken: accessToken,
 			RefreshToken: refreshToken,
 		}),
-	};
+	}
 })
 	.use(bodyValidator(reqSchema))
-	.use(errorHandler());
+	.use(errorHandler())

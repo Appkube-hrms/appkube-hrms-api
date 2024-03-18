@@ -1,8 +1,8 @@
-const { connectToDatabase } = require("../db/dbConnector");
-const { z } = require("zod");
-const { authorize } = require("../util/authorizer");
-const { errorHandler } = require("../util/errorHandler");
-const { bodyValidator } = require("../util/bodyValidator");
+const { connectToDatabase } = require("../db/dbConnector")
+const { z } = require("zod")
+const { authorize } = require("../util/authorizer")
+const { errorHandler } = require("../util/errorHandler")
+const { bodyValidator } = require("../util/bodyValidator")
 
 const organisationSchema = z.object({
 	name: z
@@ -17,7 +17,7 @@ const organisationSchema = z.object({
 				"Invalid phone number format. Should be a valid phone number format",
 		})
 		.regex(
-			/^(\+\d{1,2}\s?)?(\(\d{3}\)\s?\d{3}(-|\s?)\d{4}|\d{10}(-|\s?)\d{4}|\d{7,11})$/
+			/^(\+\d{1,2}\s?)?(\(\d{3}\)\s?\d{3}(-|\s?)\d{4}|\d{10}(-|\s?)\d{4}|\d{7,11})$/,
 		),
 	logo: z.string().default(""),
 	address_line_1: z.string(),
@@ -32,12 +32,12 @@ const organisationSchema = z.object({
 	orgId: z.string().uuid({
 		message: "invalid request",
 	}),
-});
+})
 
-exports.handler = middy(async (event,context) => {
-	context.callbackWaitsForEmptyEventLoop = false;
-	const requestBody = JSON.parse(event.body);
-	const client = await connectToDatabase();
+exports.handler = middy(async (event, context) => {
+	context.callbackWaitsForEmptyEventLoop = false
+	const requestBody = JSON.parse(event.body)
+	const client = await connectToDatabase()
 	try {
 		const res = await client.query(
 			` UPDATE organisation 
@@ -69,15 +69,15 @@ exports.handler = middy(async (event,context) => {
 				requestBody.city,
 				requestBody.zipcode,
 				requestBody.orgId,
-			]
-		);
+			],
+		)
 		return {
 			statusCode: 200,
 			headers: {
 				"Access-Control-Allow-Origin": "*",
 			},
 			body: JSON.stringify(res.rows[0]),
-		};
+		}
 	} catch (e) {
 		return {
 			statusCode: 500,
@@ -85,11 +85,11 @@ exports.handler = middy(async (event,context) => {
 				"Access-Control-Allow-Origin": "*",
 			},
 			body: JSON.stringify({ message: e.message, error: e }),
-		};
+		}
 	} finally {
-		await client.end();
+		await client.end()
 	}
 })
 	.use(authorize())
 	.use(bodyValidator(organisationSchema))
-	.use(errorHandler());
+	.use(errorHandler())

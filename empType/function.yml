@@ -14,7 +14,7 @@ listEmptype:
         - http:
               path: /empType
               method: get
-              cors: true 
+              cors: true
 
 updateEmptype:
     handler: empType/updateEmpType.handler
@@ -23,4 +23,4 @@ updateEmptype:
         - http:
               path: /empType
               method: put
-              cors: true                                          
+              cors: true
