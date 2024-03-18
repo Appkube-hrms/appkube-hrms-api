@@ -41,8 +41,7 @@ async function validateToken(token) {
 const authorize = () => ({
 	before: async (handler, next) => {
 		const { event } = handler
-		const authHeader =
-			event.headers.Authorization || event.headers.authorization
+		const authHeader = event.headers.Authorization ?? null
 		if (!authHeader) {
 			throw new AuthorizationError("no authorization header provided")
 		}
