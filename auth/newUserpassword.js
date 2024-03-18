@@ -6,8 +6,8 @@ const {
 	RespondToAuthChallengeCommand,
 	AdminInitiateAuthCommand,
 } = require("@aws-sdk/client-cognito-identity-provider")
-const bodyParser = require("body-parser")
 const { bodyValidator } = require("../util/bodyValidator")
+const { errorHandler } = require("../util/errorHandler");
 
 const reqSchema = z.object({
 	email: z.string(),
@@ -35,18 +35,6 @@ exports.handler = middy(async (event, context) => {
 		newpassword: requestBody.newpassword,
 	}
 
-	const valResult = reqSchema.safeParse(req)
-	if (!valResult.success) {
-		return {
-			statusCode: 400,
-			headers: {
-				"Access-Control-Allow-Origin": "*",
-			},
-			body: JSON.stringify({
-				error: valResult.error.formErrors.fieldErrors,
-			}),
-		}
-	}
 	const client = await connectToDatabase()
 
 	const inputAuth = {
