@@ -3,11 +3,11 @@ const {
 	GetScheduleCommand,
 	UpdateScheduleCommand,
 } = require("@aws-sdk/client-scheduler")
-const uuid = require("uuid")
 const { connectToDatabase } = require("../db/dbConnector")
 require("dotenv").config()
 const { z } = require("zod")
 const middy = require("middy")
+const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")
 
@@ -62,5 +62,6 @@ exports.handler = middy(async (event, context) => {
 		}),
 	}
 })
+	.use(authorize())
 	.use(errorHandler())
 	.use(bodyValidator(schema))
