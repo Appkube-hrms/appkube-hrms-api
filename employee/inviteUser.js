@@ -8,6 +8,7 @@ const {
 	AdminDeleteUserCommand,
 } = require("@aws-sdk/client-cognito-identity-provider")
 const middy = require("middy")
+const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { pathParamsValidator } = require("../util/pathParamsValidator")
 const generatePassword = require("generate-password")

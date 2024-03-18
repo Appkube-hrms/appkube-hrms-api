@@ -6,6 +6,7 @@ const {
 const { connectToDatabase } = require("../db/dbConnector")
 const { z } = require("zod")
 const middy = require("middy")
+const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { queryParamsValidator } = require("../util/queryParamsValidator")
 
@@ -54,5 +55,6 @@ exports.handler = middy(async (event, context) => {
 		body: JSON.stringify({ message: `user invite deleted successfully.` }),
 	}
 })
+	.use(authorize())
 	.use(queryParamsValidator(idSchema))
 	.use(errorHandler())
