@@ -50,8 +50,7 @@ const authorize = () => ({
 			throw new AuthorizationError("invalid authorization header format");
 		}
 		const token = authHeader.substring(7);
-		const userData = await validateToken(token);
-		event.user = userData;
+		await validateToken(token);
 		next();
 	},
 });
