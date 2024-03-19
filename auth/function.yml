@@ -20,7 +20,7 @@ forgotPassword:
     role: ${env:LAMBDA_ROLE}
     events:
         - http:
-              path: /forgotpassword
+              path: /forgotPassword
               method: post
               cors: true
 resetPassword:
@@ -28,16 +28,16 @@ resetPassword:
     role: ${env:LAMBDA_ROLE}
     events:
         - http:
-              path: /resetpassword
+              path: /resetPassword
               method: post
               cors: true
 
 newUserpassword:
-    handler: auth/newUserpassword.handler
+    handler: auth/newUserPassword.handler
     role: ${env:LAMBDA_ROLE}
     events:
         - http:
-              path: /newUserpassword
+              path: /newUserPassword
               method: post
               cors: true
 
