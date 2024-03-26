@@ -1,6 +1,7 @@
 const { connectToDatabase } = require("../db/dbConnector")
 const { z } = require("zod")
 const middy = require("middy")
+const jwt = require('jsonwebtoken')
 const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")
@@ -14,13 +15,16 @@ const EmpTypeSchema = z.object({
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	const org_id = "482d8374-fca3-43ff-a638-02c8a425c492"
+	const tokenWithBearer = event.headers.Authorization
+    const token = tokenWithBearer.split(' ')[1];
+    const decodedToken = jwt.decode(token, { complete: true });
+    const org_id = decodedToken.payload['custom:org_id'];
 	const { type, id } = JSON.parse(event.body)
 	const client = await connectToDatabase()
 
 	const result = await client.query(
-		`UPDATE emp_type SET type = $1, org_id = $2 WHERE id = $3 RETURNING *`,
-		[type, org_id, id],
+		`UPDATE emp_type SET type = $1 WHERE id = $2 AND org_id = $3 RETURNING *`,
+		[type,id,org_id],
 	)
 	if (result.rowCount === 0) {
 		return {
