@@ -6,6 +6,7 @@ const {
 const { connectToDatabase } = require("../db/dbConnector")
 const { z } = require("zod")
 const middy = require("middy")
+const jwt = require('jsonwebtoken');
 const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { queryParamsValidator } = require("../util/queryParamsValidator")
@@ -18,10 +19,14 @@ const getScheduler = `select scheduler from invite where employee_id = $1;`
 const updateInvitationStatus = `
                         UPDATE employee SET 
                         invitation_status  = $1
-                        WHERE id = $2
+                        WHERE id = $2 AND org_id = $3
                         RETURNING invitation_status;`
 
 exports.handler = middy(async (event, context) => {
+	const tokenWithBearer = event.headers.Authorization
+    const token = tokenWithBearer.split(' ')[1];
+    const decodedToken = jwt.decode(token, { complete: true });
+    const org_id = decodedToken.payload['custom:org_id'];
 	const scheduler = new SchedulerClient({ region: "us-east-1" })
 
 	const employeeId = event.queryStringParameters?.id ?? null
@@ -42,7 +47,7 @@ exports.handler = middy(async (event, context) => {
 
 	if (response.$metadata.httpStatusCode === 200) {
 		console.log("client connnected")
-		await client.query(updateInvitationStatus, ["DRAFT", employeeId])
+		await client.query(updateInvitationStatus, ["DRAFT", employeeId,org_id])
 		console.log("query executed")
 	}
 

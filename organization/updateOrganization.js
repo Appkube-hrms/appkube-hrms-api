@@ -1,5 +1,7 @@
 const { connectToDatabase } = require("../db/dbConnector")
 const { z } = require("zod")
+const jwt = require('jsonwebtoken');
+const middy = require("middy")
 const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")
@@ -28,14 +30,15 @@ const organisationSchema = z.object({
 		message: "State is required",
 	}),
 	city: z.string(),
-	zipcode: z.string().regex(/^\d{6}$/),
-	orgId: z.string().uuid({
-		message: "invalid request",
-	}),
+	zipcode: z.string().regex(/^\d{6}$/)
 })
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
+	const tokenWithBearer = event.headers.Authorization
+    const token = tokenWithBearer.split(' ')[1];
+    const decodedToken = jwt.decode(token, { complete: true });
+    const org_id = decodedToken.payload['custom:org_id'];
 	const requestBody = JSON.parse(event.body)
 	const client = await connectToDatabase()
 	try {
@@ -68,7 +71,7 @@ exports.handler = middy(async (event, context) => {
 				requestBody.state,
 				requestBody.city,
 				requestBody.zipcode,
-				requestBody.orgId,
+				org_id,
 			],
 		)
 		return {

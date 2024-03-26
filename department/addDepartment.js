@@ -1,11 +1,12 @@
 const { connectToDatabase } = require("../db/dbConnector")
 const { z } = require("zod")
+const jwt = require('jsonwebtoken');
 const middy = require("middy")
 const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")
 
-const org_id = "482d8374-fca3-43ff-a638-02c8a425c492"
+
 
 const reqSchema = z.object({
 	name: z.string().min(3, {
@@ -14,8 +15,13 @@ const reqSchema = z.object({
 })
 
 exports.handler = middy(async (event, context) => {
+	const tokenWithBearer = event.headers.Authorization
+    const token = tokenWithBearer.split(' ')[1];
+    const decodedToken = jwt.decode(token, { complete: true });
+    const org_id = decodedToken.payload['custom:org_id'];
 	context.callbackWaitsForEmptyEventLoop = false
-	const { name } = JSON.parse(event.body)
+	const requestBody = JSON.parse(event.body)
+	const { name } = requestBody
 	const client = await connectToDatabase()
 	const result = await client.query(
 		`INSERT INTO department (name, org_id) VALUES ($1, $2) RETURNING *`,
