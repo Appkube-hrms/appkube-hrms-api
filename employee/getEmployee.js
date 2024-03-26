@@ -4,6 +4,7 @@ const middy = require("middy")
 const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { pathParamsValidator } = require("../util/pathParamsValidator")
+const jwt = require("jsonwebtoken")
 
 const idSchema = z.object({
 	id: z.string().uuid({ message: "Invalid employee id" }),
@@ -11,6 +12,11 @@ const idSchema = z.object({
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
+	const tokenWithBearer = event.headers.Authorization
+	const token = tokenWithBearer.split(" ")[1]
+	const decodedToken = jwt.decode(token, { complete: true })
+	const org_id = decodedToken.payload["custom:org_id"]
+	console.log(org_id)
 	const employeeId = event.pathParameters?.id ?? null
 	const client = await connectToDatabase()
 
@@ -54,9 +60,11 @@ exports.handler = middy(async (event, context) => {
         organisation o ON e.org_id = o.id  
     WHERE
         e.id = $1
+        AND e.org_id = $2
 `
 
-	const result = await client.query(query, [employeeId])
+	const result = await client.query(query, [employeeId, org_id])
+
 	await client.end()
 
 	const formattedResult = formatResult(result.rows)

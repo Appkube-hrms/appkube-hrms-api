@@ -12,6 +12,7 @@ const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { pathParamsValidator } = require("../util/pathParamsValidator")
 const generatePassword = require("generate-password")
+const jwt = require("jsonwebtoken")
 
 const idSchema = z.object({
 	id: z.string().uuid({ message: "Invalid employee id" }),
@@ -21,7 +22,7 @@ const cognitoClient = new CognitoIdentityProviderClient({
 	region: "us-east-1",
 })
 
-const empDetailsQuery = `SELECT work_email, org_id
+const empDetailsQuery = `SELECT work_email
                         FROM employee 
                         WHERE id = $1;`
 
@@ -33,6 +34,10 @@ const updateInvitationStatus = `
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
+	const tokenWithBearer = event.headers.Authorization
+	const token = tokenWithBearer.split(" ")[1]
+	const decodedToken = jwt.decode(token, { complete: true })
+	const org_id = decodedToken.payload["custom:org_id"]
 	const employeeId = event.pathParameters?.id ?? null
 	let status = event.queryStringParameters?.invitation_status ?? null
 	if (!status || status !== "SCHEDULED") {
@@ -40,7 +45,6 @@ exports.handler = middy(async (event, context) => {
 	}
 	const client = await connectToDatabase()
 	const empDetailsResult = await client.query(empDetailsQuery, [employeeId])
-	const org_id = empDetailsResult.rows[0].org_id
 	const work_email = empDetailsResult.rows[0].work_email
 	const password = generatePassword.generate({
 		length: 16,
