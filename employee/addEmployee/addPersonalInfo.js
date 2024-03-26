@@ -4,6 +4,8 @@ const middy = require("middy")
 const { authorize } = require("../../util/authorizer")
 const { errorHandler } = require("../../util/errorHandler")
 const { bodyValidator } = require("../../util/bodyValidator")
+const jwt = require('jsonwebtoken');
+
 
 const requestBodySchema = z.object({
 	first_name: z
@@ -33,8 +35,13 @@ const requestBodySchema = z.object({
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
 	const requestBody = JSON.parse(event.body)
-	const org_id = "482d8374-fca3-43ff-a638-02c8a425c492"
+	// const org_id = "482d8374-fca3-43ff-a638-02c8a425c492"
 	const currentTimestamp = new Date().toISOString()
+
+	const tokenWithBearer = event.headers.Authorization
+	const token = tokenWithBearer.split(' ')[1];
+	const decodedToken = jwt.decode(token, { complete: true });
+	const org_id = decodedToken.payload['custom:org_id'];
 
 	const personalInfoQuery = `
         INSERT INTO employee 

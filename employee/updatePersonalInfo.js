@@ -5,6 +5,7 @@ const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")
 const { pathParamsValidator } = require("../util/pathParamsValidator")
+const jwt = require('jsonwebtoken');
 
 const idSchema = z.object({
 	id: z.string().uuid({ message: "Invalid employee id" }),
@@ -35,10 +36,16 @@ const requestBodySchema = z.object({
 })
 
 exports.handler = middy(async (event, context) => {
+const tokenWithBearer = event.headers.Authorization
+    const token = tokenWithBearer.split(' ')[1];
+    const decodedToken = jwt.decode(token, { complete: true });
+    const org_id = decodedToken.payload['custom:org_id'];
+ 
+ 
 	context.callbackWaitsForEmptyEventLoop = false
 	const requestBody = JSON.parse(event.body)
 	requestBody.id = event.pathParameters.id
-	const org_id = "482d8374-fca3-43ff-a638-02c8a425c492"
+	// const org_id = "482d8374-fca3-43ff-a638-02c8a425c492"
 	const currentTimestamp = new Date().toISOString()
 	const personalInfoQuery = `
         UPDATE employee SET
@@ -53,7 +60,9 @@ exports.handler = middy(async (event, context) => {
             highest_qualification = $9,
             image = $10,
             updated_at = $11
-        WHERE id = $12 RETURNING *
+        WHERE id = $12 
+		AND org_id = $13
+		RETURNING *
         `
 
 	const addressQuery = `
@@ -83,6 +92,7 @@ exports.handler = middy(async (event, context) => {
 			requestBody.image,
 			currentTimestamp,
 			requestBody.id,
+			org_id
 		])
 
 		const addressQueryResult = await client.query(addressQuery, [
