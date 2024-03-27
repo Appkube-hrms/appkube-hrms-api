@@ -17,11 +17,13 @@ exports.handler = middy(async (event, context) => {
                     org_id = $1::uuid`
 	const result = await client.query(query, [org_id])
 	if (result.rowCount > 0) {
+		await client.end();
 		return {
 			statusCode: 200,
 			body: JSON.stringify(result.rows),
 		}
 	} else {
+		await client.end();
 		return {
 			statusCode: 200,
 			body: JSON.stringify([]),

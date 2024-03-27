@@ -78,6 +78,7 @@ exports.handler = middy(async (event, context) => {
 		image: result.image || "",
 		email_verified: result.email_verified || "",
 	}
+	await client.end();
 	return {
 		statusCode: 200,
 		headers: {
