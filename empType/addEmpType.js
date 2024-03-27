@@ -5,8 +5,6 @@ const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")
 
-const org_id = "482d8374-fca3-43ff-a638-02c8a425c492"
-
 const reqSchema = z.object({
 	type: z.string().min(3, {
 		message: "type must be at least 3 characters long",
@@ -14,6 +12,7 @@ const reqSchema = z.object({
 })
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
+	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
 	const { type } = JSON.parse(event.body)
 	const client = await connectToDatabase()
 	const result = await client.query(

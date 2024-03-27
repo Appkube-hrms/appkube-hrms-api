@@ -21,7 +21,7 @@ const cognitoClient = new CognitoIdentityProviderClient({
 	region: "us-east-1",
 })
 
-const empDetailsQuery = `SELECT work_email, org_id
+const empDetailsQuery = `SELECT work_email
                         FROM employee 
                         WHERE id = $1;`
 
@@ -33,6 +33,7 @@ const updateInvitationStatus = `
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
+	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
 	const employeeId = event.pathParameters?.id ?? null
 	let status = event.queryStringParameters?.invitation_status ?? null
 	if (!status || status !== "SCHEDULED") {
@@ -40,7 +41,6 @@ exports.handler = middy(async (event, context) => {
 	}
 	const client = await connectToDatabase()
 	const empDetailsResult = await client.query(empDetailsQuery, [employeeId])
-	const org_id = empDetailsResult.rows[0].org_id
 	const work_email = empDetailsResult.rows[0].work_email
 	const password = generatePassword.generate({
 		length: 16,
@@ -106,6 +106,8 @@ exports.handler = middy(async (event, context) => {
 			console.log("4")
 			await cognitoClient.send(new AdminDeleteUserCommand(params))
 			console.log("5")
+			throw error
+		}else{
 			throw error
 		}
 	}
