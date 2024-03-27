@@ -1,5 +1,6 @@
 const { connectToDatabase } = require("../db/dbConnector")
 const { z } = require("zod")
+const middy = require("middy")
 const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")
@@ -28,14 +29,12 @@ const organisationSchema = z.object({
 		message: "State is required",
 	}),
 	city: z.string(),
-	zipcode: z.string().regex(/^\d{6}$/),
-	orgId: z.string().uuid({
-		message: "invalid request",
-	}),
+	zipcode: z.string().regex(/^\d{6}$/)
 })
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
+	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
 	const requestBody = JSON.parse(event.body)
 	const client = await connectToDatabase()
 	try {
@@ -68,7 +67,7 @@ exports.handler = middy(async (event, context) => {
 				requestBody.state,
 				requestBody.city,
 				requestBody.zipcode,
-				requestBody.orgId,
+				org_id,
 			],
 		)
 		return {
