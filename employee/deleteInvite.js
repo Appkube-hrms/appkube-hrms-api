@@ -18,10 +18,11 @@ const getScheduler = `select scheduler from invite where employee_id = $1;`
 const updateInvitationStatus = `
                         UPDATE employee SET 
                         invitation_status  = $1
-                        WHERE id = $2
+                        WHERE id = $2 
                         RETURNING invitation_status;`
 
 exports.handler = middy(async (event, context) => {
+	context.callbackWaitsForEmptyEventLoop = false
 	const scheduler = new SchedulerClient({ region: "us-east-1" })
 
 	const employeeId = event.queryStringParameters?.id ?? null
@@ -42,7 +43,7 @@ exports.handler = middy(async (event, context) => {
 
 	if (response.$metadata.httpStatusCode === 200) {
 		console.log("client connnected")
-		await client.query(updateInvitationStatus, ["DRAFT", employeeId])
+		await client.query(updateInvitationStatus, ["DRAFT", employeeId,org_id])
 		console.log("query executed")
 	}
 

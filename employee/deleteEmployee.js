@@ -10,9 +10,9 @@ exports.handler = middy(async (event, context) => {
 
 	const deleteQuery = `
             DELETE FROM employee
-            WHERE id = $1;
+            WHERE id = $1 ;
         `
-	const data = await client.query(deleteQuery, [empId])
+	const data = await client.query(deleteQuery, [empId,org_id])
 	if (data.rowCount === 0) {
 		return {
 			statusCode: 200,

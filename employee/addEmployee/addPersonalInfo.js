@@ -33,7 +33,7 @@ const requestBodySchema = z.object({
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
 	const requestBody = JSON.parse(event.body)
-	const org_id = "482d8374-fca3-43ff-a638-02c8a425c492"
+	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
 	const currentTimestamp = new Date().toISOString()
 
 	const personalInfoQuery = `

@@ -5,7 +5,7 @@ const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")
 
-const org_id = "482d8374-fca3-43ff-a638-02c8a425c492"
+
 
 const reqSchema = z.object({
 	name: z.string().min(3, {
@@ -15,7 +15,9 @@ const reqSchema = z.object({
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	const { name } = JSON.parse(event.body)
+	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
+	const requestBody = JSON.parse(event.body)
+	const { name } = requestBody
 	const client = await connectToDatabase()
 	const result = await client.query(
 		`INSERT INTO department (name, org_id) VALUES ($1, $2) RETURNING *`,
