@@ -1,7 +1,6 @@
 const { connectToDatabase } = require("../db/dbConnector")
 const { z } = require("zod")
 const middy = require("middy")
-const jwt = require('jsonwebtoken')
 const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")
@@ -15,10 +14,7 @@ const EmpTypeSchema = z.object({
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	const tokenWithBearer = event.headers.Authorization
-    const token = tokenWithBearer.split(' ')[1];
-    const decodedToken = jwt.decode(token, { complete: true });
-    const org_id = decodedToken.payload['custom:org_id'];
+	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
 	const { type, id } = JSON.parse(event.body)
 	const client = await connectToDatabase()
 
