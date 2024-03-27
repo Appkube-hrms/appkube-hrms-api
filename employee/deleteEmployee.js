@@ -14,6 +14,7 @@ exports.handler = middy(async (event, context) => {
         `
 	const data = await client.query(deleteQuery, [empId,org_id])
 	if (data.rowCount === 0) {
+		await client.end();
 		return {
 			statusCode: 200,
 			headers: {
@@ -22,6 +23,7 @@ exports.handler = middy(async (event, context) => {
 			body: JSON.stringify({ message: "content not available" }),
 		}
 	}
+	await client.end();
 	return {
 		statusCode: 200,
 		headers: {

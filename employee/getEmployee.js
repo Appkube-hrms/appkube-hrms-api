@@ -57,7 +57,7 @@ exports.handler = middy(async (event, context) => {
 `
 
 	const result = await client.query(query, [employeeId])
-	await client.end()
+	await client.end();
 
 	const formattedResult = formatResult(result.rows)
 	return {

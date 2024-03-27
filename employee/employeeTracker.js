@@ -56,7 +56,7 @@ exports.handler = middy(async (event, context) => {
 		employee_type: row.emp_type,
 		image: row.image || "",
 	}))
-
+	await client.end();
 	return {
 		statusCode: 200,
 		headers: {

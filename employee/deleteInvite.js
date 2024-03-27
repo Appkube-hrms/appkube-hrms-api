@@ -46,7 +46,7 @@ exports.handler = middy(async (event, context) => {
 		await client.query(updateInvitationStatus, ["DRAFT", employeeId,org_id])
 		console.log("query executed")
 	}
-
+	await client.end();
 	return {
 		statusCode: 200,
 		headers: {

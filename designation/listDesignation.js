@@ -15,6 +15,7 @@ const letDesignations = async (event, context) => {
                         WHERE
                             org_id = $1::uuid`
 	const result = await client.query(query, [org_id])
+	await client.end();
 	return {
 		statusCode: 200,
 		headers: {
