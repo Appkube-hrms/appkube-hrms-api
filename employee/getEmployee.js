@@ -11,7 +11,6 @@ const idSchema = z.object({
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
 	const employeeId = event.pathParameters?.id ?? null
 	const client = await connectToDatabase()
 
@@ -55,10 +54,9 @@ exports.handler = middy(async (event, context) => {
         organisation o ON e.org_id = o.id  
     WHERE
         e.id = $1
-		AND e.org_id = $2
 `
 
-	const result = await client.query(query, [employeeId, org_id])
+	const result = await client.query(query, [employeeId])
 	await client.end();
 
 	const formattedResult = formatResult(result.rows)
