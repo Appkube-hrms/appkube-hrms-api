@@ -5,13 +5,12 @@ const { errorHandler } = require("../util/errorHandler")
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
 	const empId = event.pathParameters.emp_id
 	const client = await connectToDatabase()
 
 	const deleteQuery = `
             DELETE FROM employee
-            WHERE id = $1 AND org_id = $2;
+            WHERE id = $1 ;
         `
 	const data = await client.query(deleteQuery, [empId,org_id])
 	if (data.rowCount === 0) {
