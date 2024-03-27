@@ -14,13 +14,12 @@ const DesignationSchema = z.object({
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
 	const { designation, id } = JSON.parse(event.body)
 	const client = await connectToDatabase()
 
 	const result = await client.query(
-		`UPDATE emp_designation SET designation = $1 WHERE id = $2 AND org_id = $3  RETURNING *`,
-		[designation,id,org_id],
+		`UPDATE emp_designation SET designation = $1 WHERE id = $2 RETURNING *`,
+		[designation,id],
 	)
 	if (result.rowCount === 0) {
 		await client.end();

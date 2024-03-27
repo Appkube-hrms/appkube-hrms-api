@@ -14,13 +14,12 @@ const EmpTypeSchema = z.object({
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
 	const { type, id } = JSON.parse(event.body)
 	const client = await connectToDatabase()
 
 	const result = await client.query(
-		`UPDATE emp_type SET type = $1 WHERE id = $2 AND org_id = $3 RETURNING *`,
-		[type,id,org_id],
+		`UPDATE emp_type SET type = $1 WHERE id = $2 RETURNING *`,
+		[type,id],
 	)
 	if (result.rowCount === 0) {
 		await client.end();
