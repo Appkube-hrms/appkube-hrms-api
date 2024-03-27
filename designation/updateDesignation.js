@@ -23,6 +23,7 @@ exports.handler = middy(async (event, context) => {
 		[designation,id,org_id],
 	)
 	if (result.rowCount === 0) {
+		await client.end();
 		return {
 			statusCode: 404,
 			headers: {
@@ -34,6 +35,7 @@ exports.handler = middy(async (event, context) => {
 		}
 	}
 	const updatedDesignation = result.rows[0]
+	await client.end();
 	return {
 		statusCode: 200,
 		headers: {

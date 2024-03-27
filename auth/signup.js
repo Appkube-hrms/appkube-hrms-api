@@ -38,6 +38,7 @@ exports.handler = middy(async (event, context) => {
 		[req.email],
 	)
 	if (result.rows[0].count > 0) {
+		await client.end();
 		return {
 			statusCode: 500,
 			headers: {
@@ -85,6 +86,7 @@ exports.handler = middy(async (event, context) => {
 			[user_id, req.email, org_id],
 		)
 		await client.query("COMMIT")
+		await client.end();
 		return {
 			statusCode: 200,
 			headers: {
@@ -94,6 +96,7 @@ exports.handler = middy(async (event, context) => {
 		}
 	} catch (error) {
 		await client.query("ROLLBACK")
+		await client.end();
 		const params = {
 			UserPoolId: process.env.COGNITO_POOL_ID,
 			Username: req.email,

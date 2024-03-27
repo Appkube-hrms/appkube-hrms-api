@@ -31,6 +31,7 @@ exports.handler = async event => {
              WHERE work_email = $2`,
 			[result.AuthenticationResult.IdToken, email],
 		)
+		await client.end();
 		return {
 			statusCode: 200,
 			headers: {
@@ -41,6 +42,7 @@ exports.handler = async event => {
 			}),
 		}
 	} catch (error) {
+		await client.end();
 		return {
 			statusCode: 500,
 			headers: {

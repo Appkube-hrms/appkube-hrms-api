@@ -50,7 +50,7 @@ exports.handler = middy(async (event, context) => {
 		employee_id,
 	])
 	console.log(result1)
-
+	await client.end();
 	return {
 		statusCode: 200,
 		headers: {

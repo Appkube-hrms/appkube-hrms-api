@@ -21,6 +21,7 @@ exports.handler = middy(async (event, context) => {
 		[designation, org_id],
 	)
 	const insertedDesignation = result.rows[0]
+	await client.end();
 	return {
 		statusCode: 200,
 		headers: {

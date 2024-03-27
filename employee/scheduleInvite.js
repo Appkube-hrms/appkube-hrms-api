@@ -74,7 +74,7 @@ exports.handler = middy(async (event, context) => {
 			])
 			console.log("query executed")
 		}
-
+		await client.end();
 		return {
 			statusCode: 200,
 			headers: {

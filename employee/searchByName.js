@@ -47,7 +47,7 @@ exports.handler = middy(async (event, context) => {
 		department: row.department,
 		start_date: row.start_date,
 	}))
-
+	await client.end();
 	return {
 		statusCode: 200,
 		headers: {

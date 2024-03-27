@@ -63,6 +63,7 @@ exports.handler = middy(async (event, context) => {
 	)
 
 	await client.query(updateInvitationStatus, ["ACTIVE", workEmail])
+	await client.end();
 	return {
 		statusCode: 301,
 		headers: {
