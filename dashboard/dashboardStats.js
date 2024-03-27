@@ -1,15 +1,11 @@
 const { connectToDatabase } = require("../db/dbConnector")
 const middy = require("middy")
-const jwt = require('jsonwebtoken');
 const { errorHandler } = require("../util/errorHandler")
 const { authorize } = require("../util/authorizer")
 
 exports.handler = middy(async (event, context) => {
-	
-const tokenWithBearer = event.headers.Authorization
-const token = tokenWithBearer.split(' ')[1];
-const decodedToken = jwt.decode(token, { complete: true });
-const org_id = decodedToken.payload['custom:org_id'];
+	context.callbackWaitsForEmptyEventLoop = false
+	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
 	const client = await connectToDatabase()
 
 	const countQuery = `

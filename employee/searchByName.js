@@ -11,6 +11,7 @@ const nameSchema = z.object({
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
+	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
 	const params = event.queryStringParameters?.name ?? null
 	const client = await connectToDatabase()
 	const query = `
@@ -32,10 +33,11 @@ exports.handler = middy(async (event, context) => {
             LEFT JOIN 
                 emp_designation edg ON ed.designation_id = edg.id
             WHERE
-                (e.first_name ILIKE '%' || $1 || '%' OR e.last_name ILIKE '%' || $1 || '%')
+                (e.first_name ILIKE '%' || $1 || '%' OR e.last_name ILIKE '%' || $1 || '%') AND
+				e.org_id = $2
         `
 
-	const res = await client.query(query, [params])
+	const res = await client.query(query, [params,org_id])
 	const extractedData = res.rows.map(row => ({
 		employee_name: `${row.first_name} ${row.last_name}`,
 		employee_id: row.id,
