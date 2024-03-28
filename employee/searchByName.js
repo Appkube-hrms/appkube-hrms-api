@@ -11,7 +11,7 @@ const nameSchema = z.object({
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
+	const org_id = event.user["custom:org_id"]
 	const params = event.queryStringParameters?.name ?? null
 	const client = await connectToDatabase()
 	const query = `
@@ -37,7 +37,7 @@ exports.handler = middy(async (event, context) => {
 				e.org_id = $2
         `
 
-	const res = await client.query(query, [params,org_id])
+	const res = await client.query(query, [params, org_id])
 	const extractedData = res.rows.map(row => ({
 		employee_name: `${row.first_name} ${row.last_name}`,
 		employee_id: row.id,
@@ -47,7 +47,7 @@ exports.handler = middy(async (event, context) => {
 		department: row.department,
 		start_date: row.start_date,
 	}))
-	await client.end();
+	await client.end()
 	return {
 		statusCode: 200,
 		headers: {

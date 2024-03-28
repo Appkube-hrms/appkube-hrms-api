@@ -33,7 +33,7 @@ const updateInvitationStatus = `
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
+	const org_id = event.user["custom:org_id"]
 	const employeeId = event.pathParameters?.id ?? null
 	let status = event.queryStringParameters?.invitation_status ?? null
 	if (!status || status !== "SCHEDULED") {
@@ -87,7 +87,7 @@ exports.handler = middy(async (event, context) => {
 		)
 		await client.query(updateInvitationStatus, [status, employeeId])
 		console.log("3")
-		await client.end();
+		await client.end()
 		return {
 			statusCode: 200,
 			headers: {
@@ -107,7 +107,7 @@ exports.handler = middy(async (event, context) => {
 			await cognitoClient.send(new AdminDeleteUserCommand(params))
 			console.log("5")
 			throw error
-		}else{
+		} else {
 			throw error
 		}
 	}

@@ -5,7 +5,7 @@ const { errorHandler } = require("../util/errorHandler")
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-    const org_id = event.requestContext.authorizer.claims['custom:org_id'];
+	const org_id = event.user["custom:org_id"]
 	const client = await connectToDatabase()
 	const query = `
                         SELECT 
@@ -16,7 +16,7 @@ exports.handler = middy(async (event, context) => {
                             org_id = $1::uuid`
 	const result = await client.query(query, [org_id])
 	if (result.rowCount > 0) {
-		await client.end();
+		await client.end()
 		return {
 			statusCode: 200,
 			headers: {
@@ -25,7 +25,7 @@ exports.handler = middy(async (event, context) => {
 			body: JSON.stringify(result.rows),
 		}
 	} else {
-		await client.end();
+		await client.end()
 		return {
 			statusCode: 200,
 			headers: {

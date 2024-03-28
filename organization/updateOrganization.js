@@ -29,12 +29,12 @@ const organisationSchema = z.object({
 		message: "State is required",
 	}),
 	city: z.string(),
-	zipcode: z.string().regex(/^\d{6}$/)
+	zipcode: z.string().regex(/^\d{6}$/),
 })
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
+	const org_id = event.user["custom:org_id"]
 	const requestBody = JSON.parse(event.body)
 	const client = await connectToDatabase()
 	try {

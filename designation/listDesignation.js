@@ -5,7 +5,7 @@ const { errorHandler } = require("../util/errorHandler")
 
 const letDesignations = async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
+	const org_id = event.user["custom:org_id"]
 	const client = await connectToDatabase()
 	const query = `
                         SELECT 
@@ -15,7 +15,7 @@ const letDesignations = async (event, context) => {
                         WHERE
                             org_id = $1::uuid`
 	const result = await client.query(query, [org_id])
-	await client.end();
+	await client.end()
 	return {
 		statusCode: 200,
 		headers: {

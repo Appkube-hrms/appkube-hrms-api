@@ -12,7 +12,7 @@ const reqSchema = z.object({
 })
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
+	const org_id = event.user["custom:org_id"]
 	const { type } = JSON.parse(event.body)
 	const client = await connectToDatabase()
 	const result = await client.query(
@@ -20,7 +20,7 @@ exports.handler = middy(async (event, context) => {
 		[type, org_id],
 	)
 	const insertedEmptype = result.rows[0]
-	await client.end();
+	await client.end()
 	return {
 		statusCode: 200,
 		headers: {

@@ -5,7 +5,7 @@ const { authorize } = require("../util/authorizer")
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
+	const org_id = event.user['custom:org_id']
 	const client = await connectToDatabase()
 
 	const countQuery = `

@@ -5,7 +5,7 @@ const { errorHandler } = require("../util/errorHandler")
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
+	const org_id = event.user["custom:org_id"]
 	let page = event.queryStringParameters?.page ?? null
 	if (page == null) {
 		page = 1
@@ -58,7 +58,7 @@ exports.handler = middy(async (event, context) => {
 		department: row.department,
 		start_date: row.start_date,
 	}))
-	await client.end();
+	await client.end()
 	return {
 		statusCode: 200,
 		headers: {

@@ -5,8 +5,6 @@ const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")
 
-
-
 const reqSchema = z.object({
 	name: z.string().min(3, {
 		message: "Department name must be at least 3 characters long",
@@ -15,7 +13,7 @@ const reqSchema = z.object({
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
+	const org_id = event.user["custom:org_id"]
 	const requestBody = JSON.parse(event.body)
 	const { name } = requestBody
 	const client = await connectToDatabase()
@@ -24,7 +22,7 @@ exports.handler = middy(async (event, context) => {
 		[name, org_id],
 	)
 	const insertedDepartment = result.rows[0]
-	await client.end();
+	await client.end()
 	return {
 		statusCode: 200,
 		headers: {

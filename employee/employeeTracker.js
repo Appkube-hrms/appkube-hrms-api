@@ -5,7 +5,7 @@ const { errorHandler } = require("../util/errorHandler")
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	const org_id = event.requestContext.authorizer.claims['custom:org_id'];
+	const org_id = event.user["custom:org_id"]
 	let page = event.queryStringParameters?.page ?? null
 	if (page == null) {
 		page = 1
@@ -44,10 +44,10 @@ exports.handler = middy(async (event, context) => {
                 ORDER BY e.first_name 
                 LIMIT 10 OFFSET ${offset}
     `
-	const totalPagesResult = await client.query(totalPagesQuery,[org_id])
+	const totalPagesResult = await client.query(totalPagesQuery, [org_id])
 	const totalRecords = totalPagesResult.rows[0].total_count
 	const totalPages = Math.ceil(totalRecords / limit)
-	const EmployeeMetaData = await client.query(query,[org_id])
+	const EmployeeMetaData = await client.query(query, [org_id])
 	const resultArray = EmployeeMetaData.rows.map(row => ({
 		employee_name: `${row.first_name} ${row.last_name}`,
 		email: row.email,
@@ -56,7 +56,7 @@ exports.handler = middy(async (event, context) => {
 		employee_type: row.emp_type,
 		image: row.image || "",
 	}))
-	await client.end();
+	await client.end()
 	return {
 		statusCode: 200,
 		headers: {
