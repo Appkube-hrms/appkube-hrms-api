@@ -5,7 +5,7 @@ const {
 	CognitoIdentityProviderClient,
 	InitiateAuthCommand,
 } = require("@aws-sdk/client-cognito-identity-provider")
-const middy = require("middy")
+const middy = require("@middy/core")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")
 const jwt = require("jsonwebtoken")
@@ -78,7 +78,7 @@ exports.handler = middy(async (event, context) => {
 		image: result.image || "",
 		email_verified: result.email_verified || "",
 	}
-	await client.end();
+	await client.end()
 	return {
 		statusCode: 200,
 		headers: {

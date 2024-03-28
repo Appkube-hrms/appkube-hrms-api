@@ -1,5 +1,5 @@
 exports.pathParamsValidator = schema => ({
-	before: (handler, next) => {
+	before: (handler) => {
 		const { pathParameters } = handler.event
 		if (!pathParameters) {
 			throw new Error("Path parameters are missing!")
@@ -8,6 +8,5 @@ exports.pathParamsValidator = schema => ({
 		if (!result.success) {
 			next(new Error("Invalid path parameters"))
 		}
-		return next()
 	},
 })

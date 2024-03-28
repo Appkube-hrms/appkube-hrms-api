@@ -1,6 +1,6 @@
 const { connectToDatabase } = require("../db/dbConnector")
 const { z } = require("zod")
-const middy = require("middy")
+const middy = require("@middy/core")
 const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")
@@ -22,7 +22,7 @@ exports.handler = middy(async (event, context) => {
 		[name, id],
 	)
 	if (result.rowCount === 0) {
-		await client.end();
+		await client.end()
 		return {
 			statusCode: 404,
 			headers: {
@@ -34,7 +34,7 @@ exports.handler = middy(async (event, context) => {
 		}
 	}
 	const updatedDepartment = result.rows[0]
-	await client.end();
+	await client.end()
 	return {
 		statusCode: 200,
 		headers: {

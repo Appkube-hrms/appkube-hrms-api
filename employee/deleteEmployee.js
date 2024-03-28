@@ -1,5 +1,5 @@
 const { connectToDatabase } = require("../db/dbConnector")
-const middy = require("middy")
+const middy = require("@middy/core")
 const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 
@@ -12,9 +12,9 @@ exports.handler = middy(async (event, context) => {
             DELETE FROM employee
             WHERE id = $1 ;
         `
-	const data = await client.query(deleteQuery, [empId,org_id])
+	const data = await client.query(deleteQuery, [empId, org_id])
 	if (data.rowCount === 0) {
-		await client.end();
+		await client.end()
 		return {
 			statusCode: 200,
 			headers: {
@@ -23,7 +23,7 @@ exports.handler = middy(async (event, context) => {
 			body: JSON.stringify({ message: "content not available" }),
 		}
 	}
-	await client.end();
+	await client.end()
 	return {
 		statusCode: 200,
 		headers: {

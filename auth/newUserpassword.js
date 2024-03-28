@@ -1,13 +1,13 @@
 const { connectToDatabase } = require("../db/dbConnector")
 const { z } = require("zod")
-const middy = require("middy")
+const middy = require("@middy/core")
 const {
 	CognitoIdentityProviderClient,
 	RespondToAuthChallengeCommand,
 	AdminInitiateAuthCommand,
 } = require("@aws-sdk/client-cognito-identity-provider")
 const { bodyValidator } = require("../util/bodyValidator")
-const { errorHandler } = require("../util/errorHandler");
+const { errorHandler } = require("../util/errorHandler")
 
 const reqSchema = z.object({
 	email: z.string(),
@@ -63,7 +63,7 @@ exports.handler = middy(async (event, context) => {
 	)
 
 	await client.query(updateInvitationStatus, ["ACTIVE", workEmail])
-	await client.end();
+	await client.end()
 	return {
 		statusCode: 301,
 		headers: {

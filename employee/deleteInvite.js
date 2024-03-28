@@ -5,7 +5,7 @@ const {
 } = require("@aws-sdk/client-scheduler") // CommonJS import
 const { connectToDatabase } = require("../db/dbConnector")
 const { z } = require("zod")
-const middy = require("middy")
+const middy = require("@middy/core")
 const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { queryParamsValidator } = require("../util/queryParamsValidator")
@@ -43,10 +43,14 @@ exports.handler = middy(async (event, context) => {
 
 	if (response.$metadata.httpStatusCode === 200) {
 		console.log("client connnected")
-		await client.query(updateInvitationStatus, ["DRAFT", employeeId,org_id])
+		await client.query(updateInvitationStatus, [
+			"DRAFT",
+			employeeId,
+			org_id,
+		])
 		console.log("query executed")
 	}
-	await client.end();
+	await client.end()
 	return {
 		statusCode: 200,
 		headers: {

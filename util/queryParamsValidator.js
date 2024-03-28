@@ -1,5 +1,5 @@
 exports.queryParamsValidator = schema => ({
-	before: (handler, next) => {
+	before: (handler) => {
 		const { queryStringParameters } = handler.event
 		if (!queryStringParameters) {
 			throw new Error("query parameters are missing!")
@@ -8,6 +8,5 @@ exports.queryParamsValidator = schema => ({
 		if (!result.success) {
 			next(new Error("Invalid query parameters"))
 		}
-		return next()
 	},
 })

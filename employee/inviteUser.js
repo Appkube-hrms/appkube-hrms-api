@@ -7,11 +7,12 @@ const {
 	AdminAddUserToGroupCommand,
 	AdminDeleteUserCommand,
 } = require("@aws-sdk/client-cognito-identity-provider")
-const middy = require("middy")
+const middy = require("@middy/core")
 const { authorize } = require("../util/authorizer")
-const { errorHandler } = require("../util/errorHandler")
 const { pathParamsValidator } = require("../util/pathParamsValidator")
 const generatePassword = require("generate-password")
+const { errorHandler } = require("../util/errorHandler")
+const errorLogger  = require("@middy/error-logger")
 
 const idSchema = z.object({
 	id: z.string().uuid({ message: "Invalid employee id" }),
@@ -32,7 +33,6 @@ const updateInvitationStatus = `
                         RETURNING invitation_status ;`
 
 exports.handler = middy(async (event, context) => {
-	context.callbackWaitsForEmptyEventLoop = false
 	const org_id = event.user["custom:org_id"]
 	const employeeId = event.pathParameters?.id ?? null
 	let status = event.queryStringParameters?.invitation_status ?? null
@@ -74,44 +74,44 @@ exports.handler = middy(async (event, context) => {
 	}
 	try {
 		const command = new AdminCreateUserCommand(input)
-		const res = await cognitoClient.send(command)
-		console.log("After AdminCreateUserCommand")
+		await cognitoClient.send(command)
 		const addUserToGroupParams = {
 			GroupName: "User",
 			Username: work_email,
 			UserPoolId: process.env.COGNITO_POOL_ID,
 		}
-		console.log("2")
-		await cognitoClient.send(
-			new AdminAddUserToGroupCommand(addUserToGroupParams),
+		const groupCommand = new AdminAddUserToGroupCommand(
+			addUserToGroupParams,
 		)
-		await client.query(updateInvitationStatus, [status, employeeId])
-		console.log("3")
-		await client.end()
+		await cognitoClient.send(groupCommand)
+		await client.query(updateInvitationStatus, [
+			status,
+			employeeId,
+		])
 		return {
 			statusCode: 200,
 			headers: {
 				"Access-Control-Allow-Origin": "*",
-				"Access-Control-Allow-Credentials": true,
 			},
 			body: JSON.stringify({ message: "user invited successfully" }),
 		}
-	} catch (error) {
-		console.log(error)
-		if (error.name !== "UsernameExistsException") {
+	} catch (err) {
+		if (err.name !== "UsernameExistsException") {
 			const params = {
 				UserPoolId: process.env.COGNITO_POOL_ID,
 				Username: work_email,
 			}
-			console.log("4")
 			await cognitoClient.send(new AdminDeleteUserCommand(params))
-			console.log("5")
-			throw error
+			throw err
 		} else {
-			throw error
+			throw err
 		}
+	} finally {
+		console.log("db closed")
+		await client.end()
 	}
 })
 	.use(authorize())
 	.use(pathParamsValidator(idSchema))
+	.use(errorLogger())
 	.use(errorHandler())

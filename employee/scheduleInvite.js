@@ -7,7 +7,7 @@ const { connectToDatabase } = require("../db/dbConnector")
 const uuid = require("uuid")
 require("dotenv").config()
 const { z } = require("zod")
-const middy = require("middy")
+const middy = require("@middy/core")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")
 
@@ -74,7 +74,7 @@ exports.handler = middy(async (event, context) => {
 			])
 			console.log("query executed")
 		}
-		await client.end();
+		await client.end()
 		return {
 			statusCode: 200,
 			headers: {

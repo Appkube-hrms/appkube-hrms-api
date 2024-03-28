@@ -1,6 +1,6 @@
 const { connectToDatabase } = require("../db/dbConnector")
 const { z } = require("zod")
-const middy = require("middy")
+const middy = require("@middy/core")
 const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")
@@ -19,10 +19,10 @@ exports.handler = middy(async (event, context) => {
 
 	const result = await client.query(
 		`UPDATE emp_designation SET designation = $1 WHERE id = $2 RETURNING *`,
-		[designation,id],
+		[designation, id],
 	)
 	if (result.rowCount === 0) {
-		await client.end();
+		await client.end()
 		return {
 			statusCode: 404,
 			headers: {
@@ -34,7 +34,7 @@ exports.handler = middy(async (event, context) => {
 		}
 	}
 	const updatedDesignation = result.rows[0]
-	await client.end();
+	await client.end()
 	return {
 		statusCode: 200,
 		headers: {

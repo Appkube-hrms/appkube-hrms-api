@@ -1,6 +1,6 @@
 const { connectToDatabase } = require("../db/dbConnector")
 const { z } = require("zod")
-const middy = require("middy")
+const middy = require("@middy/core")
 const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")
@@ -13,25 +13,26 @@ const idSchema = z.object({
 const requestBodySchema = z.object({
 	first_name: z
 		.string()
-		.min(3, { message: "first_name must be atleast 3 characters long" }),
+		.min(3, { message: "first_name must be at least 3 characters long" }),
 	last_name: z
 		.string()
-		.min(3, { message: "last_name must be atleast 3 characters long" }),
-	email: z.string().email(),
-	work_email: z.string().email(),
+		.min(3, { message: "last_name must be at least 3 characters long" }),
+	email: z.string().email().optional(),
+	work_email: z.string().email().optional(),
 	gender: z.string().min(1),
-	dob: z.string().datetime(),
+	dob: z.coerce.date(),
 	number: z.string(),
-	emergency_number: z.string(),
-	highest_qualification: z.string(),
-	address_line_1: z.string(),
-	address_line_2: z.string(),
-	landmark: z.string(),
-	country: z.string(),
-	state: z.string(),
-	city: z.string(),
-	zipcode: z.string(),
-	image: z.string().url(),
+	emergency_number: z.string().optional(),
+	highest_qualification: z.string().optional(),
+	address_line_1: z.string().optional(),
+	address_line_2: z.string().optional(),
+	landmark: z.string().optional(),
+	country: z.string().optional(),
+	state: z.string().optional(),
+	city: z.string().optional(),
+	zipcode: z.string().optional(),
+	emp_type: z.number().int().optional(),
+	image: z.string().optional().default(""),
 })
 
 exports.handler = middy(async (event, context) => {

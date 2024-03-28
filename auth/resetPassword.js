@@ -4,7 +4,7 @@ const {
 	CognitoIdentityProviderClient,
 	ConfirmForgotPasswordCommand,
 } = require("@aws-sdk/client-cognito-identity-provider")
-const middy = require("middy")
+const middy = require("@middy/core")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")
 
@@ -31,7 +31,7 @@ exports.handler = middy(async (event, context) => {
 
 	const command = new ConfirmForgotPasswordCommand(input)
 	await client.send(command)
-	await client.end();
+	await client.end()
 	return {
 		statusCode: 200,
 		headers: {

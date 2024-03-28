@@ -1,5 +1,5 @@
 const { connectToDatabase } = require("../db/dbConnector")
-const middy = require("middy")
+const middy = require("@middy/core")
 const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 

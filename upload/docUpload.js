@@ -1,6 +1,6 @@
 require("dotenv").config()
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3")
-const middy = require("middy")
+const middy = require("@middy/core")
 const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")

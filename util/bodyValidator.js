@@ -1,5 +1,5 @@
 exports.bodyValidator = schema => ({
-	before: (handler, next) => {
+	before: (handler) => {
 		const { body } = handler.event
 		if (!body) {
 			throw new Error("empty request body!")
@@ -9,6 +9,5 @@ exports.bodyValidator = schema => ({
 		if (!result.success) {
 			next(new Error("invalid request body"))
 		}
-		return next()
 	},
 })

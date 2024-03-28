@@ -6,7 +6,7 @@ const {
 const { AuthorizationError } = require("./authorizer")
 
 exports.errorHandler = () => ({
-	onError: (handler, next) => {
+	onError: (handler) => {
 		if (handler.error instanceof AuthorizationError) {
 			handler.response = {
 				statusCode: 403,
@@ -17,7 +17,6 @@ exports.errorHandler = () => ({
 					message: "unauthorised request",
 				}),
 			}
-			next()
 		}
 		if (handler.error instanceof UserNotConfirmedException) {
 			handler.response = {
@@ -29,11 +28,10 @@ exports.errorHandler = () => ({
 					message: "email not verified",
 				}),
 			}
-			next()
 		}
 		if (handler.error instanceof NotAuthorizedException) {
 			handler.response = {
-				statusCode: 401,
+				statusCode: 409,
 				headers: {
 					"Access-Control-Allow-Origin": "*",
 				},
@@ -41,7 +39,6 @@ exports.errorHandler = () => ({
 					message: "Incorrect username or password.",
 				}),
 			}
-			next()
 		}
 		if (handler.error instanceof UsernameExistsException) {
 			handler.response = {
@@ -53,7 +50,6 @@ exports.errorHandler = () => ({
 					message: "user already exists.",
 				}),
 			}
-			next()
 		}
 		handler.response = {
 			statusCode: 500,
@@ -65,6 +61,5 @@ exports.errorHandler = () => ({
 				error: handler.error,
 			}),
 		}
-		next()
 	},
 })

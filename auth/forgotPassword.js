@@ -4,7 +4,7 @@ const {
 	CognitoIdentityProviderClient,
 	ForgotPasswordCommand,
 } = require("@aws-sdk/client-cognito-identity-provider")
-const middy = require("middy")
+const middy = require("@middy/core")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")
 
