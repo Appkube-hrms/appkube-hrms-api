@@ -31,7 +31,6 @@ exports.handler = middy(async (event, context) => {
 
 	const command = new ConfirmForgotPasswordCommand(input)
 	await client.send(command)
-	await client.end()
 	return {
 		statusCode: 200,
 		headers: {
