@@ -34,37 +34,39 @@ const requestBodySchema = z.object({
 	image: z.string().optional(),
 })
 
+const personalInfoQuery = `
+			UPDATE employee
+			SET first_name = COALESCE($1, first_name),
+				last_name = COALESCE($2, last_name),
+				email = COALESCE($3, email),
+				work_email = COALESCE($4, work_email),
+				gender = COALESCE($5, gender),
+				dob = COALESCE($6, dob),
+				number = COALESCE($7, number),
+				emergency_number = COALESCE($8, emergency_number),
+				highest_qualification = COALESCE($9, highest_qualification),
+				image = COALESCE($10, image),
+				updated_at = $11
+			WHERE id = $12;
+		`
+
+const addressQuery = `
+		UPDATE address
+		SET address_line_1 = COALESCE($1, address_line_1),
+			address_line_2 = COALESCE($2, address_line_2),
+			landmark = COALESCE($3, landmark),
+			country = COALESCE($4, country),
+			state = COALESCE($5, state),
+			city = COALESCE($6, city),
+			zipcode = COALESCE($7, zipcode)
+		WHERE emp_id = $8;        `
+
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
 	const requestBody = JSON.parse(event.body)
 	requestBody.id = event.pathParameters.id
 	const currentTimestamp = new Date().toISOString()
-	const personalInfoQuery = `
-				UPDATE employee
-				SET first_name = COALESCE($1, first_name),
-					last_name = COALESCE($2, last_name),
-					email = COALESCE($3, email),
-					work_email = COALESCE($4, work_email),
-					gender = COALESCE($5, gender),
-					dob = COALESCE($6, dob),
-					number = COALESCE($7, number),
-					emergency_number = COALESCE($8, emergency_number),
-					highest_qualification = COALESCE($9, highest_qualification),
-					image = COALESCE($10, image),
-					updated_at = $11
-				WHERE id = $12;
-				        `
 
-	const addressQuery = `
-				UPDATE address
-				SET address_line_1 = COALESCE($1, address_line_1),
-					address_line_2 = COALESCE($2, address_line_2),
-					landmark = COALESCE($3, landmark),
-					country = COALESCE($4, country),
-					state = COALESCE($5, state),
-					city = COALESCE($6, city),
-					zipcode = COALESCE($7, zipcode)
-				WHERE emp_id = $8;        `
 	const client = await connectToDatabase()
 	await client.query("BEGIN")
 	try {
@@ -94,6 +96,7 @@ exports.handler = middy(async (event, context) => {
 			requestBody.id,
 		])
 		await client.query("COMMIT")
+		await client.end()
 		return {
 			statuscode: 200,
 			headers: {
