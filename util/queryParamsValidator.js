@@ -6,7 +6,7 @@ exports.queryParamsValidator = schema => ({
 		}
 		const result = schema.safeParse(queryStringParameters)
 		if (!result.success) {
-			next(new Error("Invalid query parameters"))
+			throw new Error("Invalid query parameters")
 		}
 	},
 })

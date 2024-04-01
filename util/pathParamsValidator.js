@@ -6,7 +6,7 @@ exports.pathParamsValidator = schema => ({
 		}
 		const result = schema.safeParse(pathParameters)
 		if (!result.success) {
-			next(new Error("Invalid path parameters"))
+			throw new Error("Invalid path parameters")
 		}
 	},
 })

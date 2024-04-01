@@ -7,7 +7,7 @@ exports.bodyValidator = schema => ({
 		const data = JSON.parse(body)
 		const result = schema.safeParse(data)
 		if (!result.success) {
-			next(new Error("invalid request body"))
+			throw new Error("invalid request body")
 		}
 	},
 })
