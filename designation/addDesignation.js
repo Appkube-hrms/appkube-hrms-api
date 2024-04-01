@@ -17,7 +17,7 @@ exports.handler = middy(async (event, context) => {
 	const { designation } = JSON.parse(event.body)
 	const client = await connectToDatabase()
 	const result = await client.query(
-		`INSERT INTO emp_designation (designation, org_id) VALUES ($1, $2) RETURNING *`,
+		`INSERT INTO emp_designation (designation, org_id) VALUES ($1, $2) RETURNING id, designation`,
 		[designation, org_id],
 	)
 	const insertedDesignation = result.rows[0]

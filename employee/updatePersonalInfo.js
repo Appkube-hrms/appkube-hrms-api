@@ -18,7 +18,6 @@ const requestBodySchema = z.object({
 		.string()
 		.min(3, { message: "last_name must be at least 3 characters long" }),
 	email: z.string().email().optional(),
-	work_email: z.string().email().optional(),
 	gender: z.string().min(1),
 	dob: z.coerce.date(),
 	number: z.string(),
@@ -32,42 +31,40 @@ const requestBodySchema = z.object({
 	city: z.string().optional(),
 	zipcode: z.string().optional(),
 	emp_type: z.number().int().optional(),
-	image: z.string().optional().default(""),
+	image: z.string().optional(),
 })
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
 	const requestBody = JSON.parse(event.body)
 	requestBody.id = event.pathParameters.id
-	const org_id = "482d8374-fca3-43ff-a638-02c8a425c492"
 	const currentTimestamp = new Date().toISOString()
 	const personalInfoQuery = `
-        UPDATE employee SET
-            first_name = $1,
-            last_name = $2,
-            email = $3,
-            work_email= $4,
-            gender = $5,
-            dob = $6,
-            number = $7,
-            emergency_number = $8,
-            highest_qualification = $9,
-            image = $10,
-            updated_at = $11
-        WHERE id = $12 RETURNING *
-        `
+				UPDATE employee
+				SET first_name = COALESCE($1, first_name),
+					last_name = COALESCE($2, last_name),
+					email = COALESCE($3, email),
+					work_email = COALESCE($4, work_email),
+					gender = COALESCE($5, gender),
+					dob = COALESCE($6, dob),
+					number = COALESCE($7, number),
+					emergency_number = COALESCE($8, emergency_number),
+					highest_qualification = COALESCE($9, highest_qualification),
+					image = COALESCE($10, image),
+					updated_at = $11
+				WHERE id = $12;
+				        `
 
 	const addressQuery = `
-        UPDATE address SET
-            address_line_1 = $1,
-            address_line_2 = $2,
-            landmark = $3,
-            country= $4,
-            state = $5,
-            city = $6,
-            zipcode = $7
-        WHERE emp_id = $8 RETURNING *
-        `
+				UPDATE address
+				SET address_line_1 = COALESCE($1, address_line_1),
+					address_line_2 = COALESCE($2, address_line_2),
+					landmark = COALESCE($3, landmark),
+					country = COALESCE($4, country),
+					state = COALESCE($5, state),
+					city = COALESCE($6, city),
+					zipcode = COALESCE($7, zipcode)
+				WHERE emp_id = $8;        `
 	const client = await connectToDatabase()
 	await client.query("BEGIN")
 	try {
@@ -97,16 +94,14 @@ exports.handler = middy(async (event, context) => {
 			requestBody.id,
 		])
 		await client.query("COMMIT")
-		const res = {}
-		Object.keys(requestBody).forEach(key => {
-			res[key] = requestBody[key]
-		})
 		return {
 			statuscode: 200,
 			headers: {
 				"Access-Control-Allow-Origin": "*",
 			},
-			body: JSON.stringify(res),
+			body: JSON.stringify({
+				message: "user details updated successfully"
+			}),
 		}
 	} catch (error) {
 		await client.query("ROLLBACK")
