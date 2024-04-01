@@ -7,6 +7,7 @@ const { AuthorizationError } = require("./authorizer")
 
 exports.errorHandler = () => ({
 	onError: (handler) => {
+		console.log(handler.error.code);
 		if (handler.error instanceof AuthorizationError) {
 			handler.response = {
 				statusCode: 403,
@@ -48,6 +49,17 @@ exports.errorHandler = () => ({
 				},
 				body: JSON.stringify({
 					message: "user already exists.",
+				}),
+			}
+		}
+		if (handler.error.code === 23505) {
+			handler.response = {
+				statusCode: 401,
+				headers: {
+					"Access-Control-Allow-Origin": "*",
+				},
+				body: JSON.stringify({
+					message: "Alrady exists.",
 				}),
 			}
 		}

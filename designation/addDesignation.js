@@ -25,7 +25,11 @@ exports.handler = middy(async (event, context) => {
 	return {
 		statusCode: 200,
 		headers: {
+			"Content-Type": "application/json",
 			"Access-Control-Allow-Origin": "*",
+			"Access-Control-Allow-Headers": "Content-Type",
+			"Access-Control-Allow-Methods": "OPTIONS, POST, GET, PUT, DELETE",
+			"Access-Control-Allow-Credentials": "true"
 		},
 		body: JSON.stringify(insertedDesignation),
 	}

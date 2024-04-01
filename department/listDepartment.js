@@ -2,6 +2,7 @@ const { connectToDatabase } = require("../db/dbConnector")
 const middy = require("@middy/core")
 const { authorize } = require("../util/authorizer")
 const { errorHandler } = require("../util/errorHandler")
+const { default: httpCors } = require("@middy/http-cors")
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
@@ -19,21 +20,16 @@ exports.handler = middy(async (event, context) => {
 		await client.end()
 		return {
 			statusCode: 200,
-			headers: {
-				"Access-Control-Allow-Origin": "*",
-			},
 			body: JSON.stringify(result.rows),
 		}
 	} else {
 		await client.end()
 		return {
 			statusCode: 200,
-			headers: {
-				"Access-Control-Allow-Origin": "*",
-			},
 			body: JSON.stringify([]),
 		}
 	}
 })
 	.use(authorize())
+	.use(httpCors())
 	.use(errorHandler())
