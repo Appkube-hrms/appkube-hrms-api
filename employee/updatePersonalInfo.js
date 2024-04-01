@@ -62,11 +62,9 @@ const addressQuery = `
 		WHERE emp_id = $8;        `
 
 exports.handler = middy(async (event, context) => {
-	context.callbackWaitsForEmptyEventLoop = false
 	const requestBody = JSON.parse(event.body)
 	requestBody.id = event.pathParameters.id
-	const currentTimestamp = new Date().toISOString()
-
+	const currentTimestamp = new Date().toISOString()	
 	const client = await connectToDatabase()
 	await client.query("BEGIN")
 	try {
@@ -84,7 +82,6 @@ exports.handler = middy(async (event, context) => {
 			currentTimestamp,
 			requestBody.id,
 		])
-
 		const addressQueryResult = await client.query(addressQuery, [
 			requestBody.address_line_1,
 			requestBody.address_line_2,
@@ -96,9 +93,8 @@ exports.handler = middy(async (event, context) => {
 			requestBody.id,
 		])
 		await client.query("COMMIT")
-		await client.end()
 		return {
-			statuscode: 200,
+			statusCode: 200,
 			headers: {
 				"Access-Control-Allow-Origin": "*",
 			},
