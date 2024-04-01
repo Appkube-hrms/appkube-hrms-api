@@ -17,7 +17,18 @@ const user_id = uuid()
 
 const reqSchema = z.object({
 	email: z.string().email(),
-	password: z.string(),
+	password: z
+		.string()
+		.refine(
+			val =>
+				/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
+					val,
+				),
+			{
+				message:
+					"Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)",
+			},
+		),
 })
 
 const cognitoClient = new CognitoIdentityProviderClient({
