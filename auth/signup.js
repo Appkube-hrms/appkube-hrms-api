@@ -12,9 +12,6 @@ const middy = require("@middy/core")
 const { errorHandler } = require("../util/errorHandler")
 const { bodyValidator } = require("../util/bodyValidator")
 
-const org_id = uuid()
-const user_id = uuid()
-
 const reqSchema = z.object({
 	email: z.string().email(),
 	password: z
@@ -58,6 +55,10 @@ exports.handler = middy(async (event, context) => {
 			body: JSON.stringify({ message: "user account already exists" }),
 		}
 	}
+
+	const org_id = uuid()
+	const user_id = uuid()
+	
 	const input = {
 		ClientId: process.env.COGNITO_CLIENT_ID,
 		Username: req.email,

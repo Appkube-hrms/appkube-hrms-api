@@ -18,11 +18,12 @@ exports.handler = middy(async (event, context) => {
             ) AS project_count;
         `
 	const countResult = await client.query(countQuery, [org_id, org_id])
+	throw new Error("panic")
 	const employeeCount = countResult.rows[0].employee_count
 	const projectCount = countResult.rows[0].project_count
 
 	await client.end()
-
+    console.log("db closed");
 	return {
 		statusCode: 200,
 		headers: {
