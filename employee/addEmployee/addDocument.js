@@ -13,6 +13,7 @@ const requestBodySchema = z.object({
 		z.object({
 			name: z.string(),
 			url: z.string().url(),
+			type: z.string()
 		}),
 	),
 })
@@ -25,9 +26,9 @@ exports.handler = middy(async (event, context) => {
 		name: "add-document",
 		text: `
             INSERT INTO document
-                (name, url, emp_id)
+                (name, url, emp_id, type)
              VALUES
-                ($1, $2, $3) 
+                ($1, $2, $3, $4) 
             RETURNING *
         `,
 	}
@@ -41,7 +42,7 @@ exports.handler = middy(async (event, context) => {
 		for (const document of requestBody.documents) {
 			const addDocumentQueryResult = await client.query(
 				addDocumentQuery,
-				[document.name, document.url, requestBody.emp_id],
+				[document.name, document.url, requestBody.emp_id, document.type],
 			)
 			const { emp_id, ...insertedDataWithoutEmpId } =
 				addDocumentQueryResult.rows[0]

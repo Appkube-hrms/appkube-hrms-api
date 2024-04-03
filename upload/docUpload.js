@@ -39,7 +39,7 @@ exports.handler = middy(async (event, context) => {
 		headers: {
 			"Access-Control-Allow-Origin": "*",
 		},
-		body: JSON.stringify({ link }),
+		body: JSON.stringify({ link,fileExtension }),
 	}
 })
 	.use(authorize())
