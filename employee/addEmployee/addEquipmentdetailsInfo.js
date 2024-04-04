@@ -15,7 +15,7 @@ const requestBodySchema = z.array(
 		manufacturer: z.string(),
 		serial_number: z.string(),
 		note: z.string(),
-		supply_date: z.coerce.date(),
+		supply_date: z.coerce.date().optional(),
 		emp_id: z.string().uuid(),
 	}),
 )
