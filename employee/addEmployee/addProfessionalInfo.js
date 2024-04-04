@@ -13,6 +13,7 @@ const requestBodySchema = z.object({
 	reporting_manager_id: z.string().uuid(),
 	work_location: z.string(),
 	start_date: z.coerce.date(),
+	employee_id: z.string().optional(),
 	emp_id: z.string().uuid(),
 })
 
@@ -31,13 +32,14 @@ exports.handler = middy(async (event, context) => {
                 department_id = $4,
                 reporting_manager_id = $5,
                 work_location = $6,
-                start_date = $7
+                start_date = $7,
+				employee_id = $8
             FROM
                 emp_designation AS des,
                 department AS dep,
                 employee AS rm
             WHERE
-                ed.emp_id = $8
+                ed.emp_id = $9
                 AND des.id = $1
                 AND dep.id = $4
                 AND rm.id = $5
@@ -65,6 +67,7 @@ exports.handler = middy(async (event, context) => {
 				requestBody.reporting_manager_id,
 				requestBody.work_location,
 				requestBody.start_date,
+				requestBody.employee_id,
 				requestBody.emp_id,
 			],
 		)
