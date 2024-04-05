@@ -11,7 +11,8 @@ const idSchema = z.object({
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	const employeeId = event.pathParameters?.id ?? null
+	const employeeId = event.pathParameters.id 
+	console.log("id : ", employeeId);
 	const client = await connectToDatabase()
 
 	const query = `
@@ -59,20 +60,6 @@ exports.handler = middy(async (event, context) => {
 	const result = await client.query(query, [employeeId])
 	await client.end()
 
-	const formattedResult = formatResult(result.rows)
-	return {
-		statusCode: 200,
-		headers: {
-			"Access-Control-Allow-Origin": "*",
-		},
-		body: JSON.stringify(formattedResult),
-	}
-})
-	.use(authorize())
-	.use(pathParamsValidator(idSchema))
-	.use(errorHandler())
-
-function formatResult(rows) {
 	const formattedResult = {
 		personal_information: {},
 		organization_details: {},
@@ -81,7 +68,7 @@ function formatResult(rows) {
 		equipment: [],
 	}
 
-	rows.forEach(row => {
+	result.rows.forEach(row => {
 		if (!formattedResult.personal_information.emp_id) {
 			formattedResult.personal_information = {
 				emp_id: row.emp_id,
@@ -165,5 +152,18 @@ function formatResult(rows) {
 	})
 
 	formattedResult.documents = Object.values(formattedResult.documents)
+	return {
+		statusCode: 200,
+		headers: {
+			"Access-Control-Allow-Origin": "*",
+		},
+		body: JSON.stringify(formattedResult),
+	}
+})
+	.use(authorize())
+	.use(pathParamsValidator(idSchema))
+	.use(errorHandler())
+
+function formatResult(rows) {
 	return formattedResult
 }
