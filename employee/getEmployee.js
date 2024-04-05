@@ -75,7 +75,7 @@ GROUP BY
 		personal_information: {},
 		organization_details: {},
 		professional_information: {},
-		documents: {},
+		documents: [],
 		equipment: [],
 	}
 	const data = result.rows[0]
@@ -130,8 +130,8 @@ GROUP BY
 		reporting_manager_last_name: data.reporting_manager_last_name || "",
 	}
 
-	formattedResult.documents = data.documents
-	formattedResult.equipment = data.equipments 
+	formattedResult.documents = data.documents || []
+	formattedResult.equipment = data.equipments || []
 
 	formattedResult.documents = Object.values(formattedResult.documents)
 	return {
