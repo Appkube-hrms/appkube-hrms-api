@@ -38,7 +38,7 @@ exports.handler = middy(async (event, context) => {
                     ed2.start_date
                 FROM
                     employee e
-                LEFT JOIN emp_detail ed2 ON e.emp_detail_id = ed2.id
+                LEFT JOIN emp_detail ed2 ON e.id = ed2.emp_id
                 LEFT JOIN emp_designation ed ON ed2.designation_id = ed.id
                 LEFT JOIN emp_type et ON ed2.emp_type_id = et.id
                 LEFT JOIN department d ON ed2.department_id = d.id
