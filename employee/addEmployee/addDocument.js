@@ -4,6 +4,7 @@ const middy = require("@middy/core")
 const { authorize } = require("../../util/authorizer")
 const { errorHandler } = require("../../util/errorHandler")
 const { bodyValidator } = require("../../util/bodyValidator")
+const { uploadToS3 } = require("./uploadDocs")
 
 const requestBodySchema = z.object({
 	emp_id: z.string().uuid({
@@ -12,7 +13,7 @@ const requestBodySchema = z.object({
 	documents: z.array(
 		z.object({
 			name: z.string(),
-			url: z.string().url(),
+			data: z.string(),
 		}),
 	),
 })
@@ -20,14 +21,13 @@ const requestBodySchema = z.object({
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
 	const requestBody = JSON.parse(event.body)
-
 	const addDocumentQuery = {
 		name: "add-document",
 		text: `
             INSERT INTO document
-                (name, url, emp_id)
+                (name, url, emp_id, type)
              VALUES
-                ($1, $2, $3) 
+                ($1, $2, $3, $4) 
             RETURNING *
         `,
 	}
@@ -39,9 +39,14 @@ exports.handler = middy(async (event, context) => {
 	try {
 		const insertedDocument = []
 		for (const document of requestBody.documents) {
+			const fileName = document.name
+			const data = document.data
+			const upload = await uploadToS3(fileName, data)
+			const url = upload.link
+			const type = upload.fileExtension
 			const addDocumentQueryResult = await client.query(
 				addDocumentQuery,
-				[document.name, document.url, requestBody.emp_id],
+				[fileName, url, requestBody.emp_id, type],
 			)
 			const { emp_id, ...insertedDataWithoutEmpId } =
 				addDocumentQueryResult.rows[0]
@@ -58,7 +63,7 @@ exports.handler = middy(async (event, context) => {
 		}
 	} catch (error) {
 		await client.query("ROLLBACK")
-		throw error // Throw the error to trigger error handling middleware
+		throw error
 	} finally {
 		await client.end()
 	}
