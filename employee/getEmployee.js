@@ -103,6 +103,7 @@ GROUP BY
 	formattedResult.organization_details = {
 		org_id: data.org_id,
 		org_name: data.name,
+		work_email: data.work_email,
 		org_logo: data.logo || "",
 		org_address_line_1: data.address_line_1,
 		org_address_line_2: data.address_line_2,
