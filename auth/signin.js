@@ -3,7 +3,7 @@ const { connectToDatabase } = require("../db/dbConnector")
 const { z } = require("zod")
 const {
 	CognitoIdentityProviderClient,
-	InitiateAuthCommand,
+	InitiateAuthCommand,RespondToAuthChallengeCommand,
 } = require("@aws-sdk/client-cognito-identity-provider")
 const middy = require("@middy/core")
 const { errorHandler } = require("../util/errorHandler")
@@ -39,12 +39,42 @@ exports.handler = middy(async (event, context) => {
 	const authResponse = await cognitoClient.send(
 		new InitiateAuthCommand(input),
 	)
-	//console.log(JSON.stringify(authResponse));
-	const accessToken = authResponse.AuthenticationResult.IdToken
-	const refreshToken = authResponse.AuthenticationResult.RefreshToken
+	console.log(JSON.stringify(authResponse));
+	let newPasswordResponse;
+        if (authResponse.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
+            const newPassword = req.password;
+            const respondToAuthChallengeInput = {
+                ChallengeName: 'NEW_PASSWORD_REQUIRED',
+                ClientId: process.env.COGNITO_CLIENT_ID,
+                ChallengeResponses: {
+                    USERNAME: req.email,
+                    NEW_PASSWORD: newPassword
+                }, 
+                Session: authResponse.Session
+            };
+            newPasswordResponse = await cognitoClient.send(
+                new RespondToAuthChallengeCommand(respondToAuthChallengeInput)
+            );
+		}
+           console.log("New password response: ", newPasswordResponse);
+		   const accessToken = authResponse && authResponse.AuthenticationResult
+        ? authResponse.AuthenticationResult.IdToken
+        : (newPasswordResponse && newPasswordResponse.AuthenticationResult
+            ? newPasswordResponse.AuthenticationResult.IdToken
+            : null);
+   
+            const refreshToken = authResponse && authResponse.AuthenticationResult
+            ? authResponse.AuthenticationResult.RefreshToken
+            : (newPasswordResponse && newPasswordResponse.AuthenticationResult
+                ? newPasswordResponse.AuthenticationResult.RefreshToken
+                : null);
+	// const accessToken = authResponse.AuthenticationResult.IdToken
+	// const refreshToken = authResponse.AuthenticationResult.RefreshToken
 	// const idToken = authResponse.AuthenticationResult.IdToken;
+	console.log("token",)
 	const tokenDetails = jwt.decode(accessToken, { complete: true, json: true })
 	const userId = tokenDetails.payload["custom:user_id"]
+	console.log("userId",userId)
 	const client = await connectToDatabase()
 	await client.query(
 		`
@@ -55,8 +85,8 @@ exports.handler = middy(async (event, context) => {
 	                work_email = $3`,
 		[accessToken, refreshToken, req.email],
 	)
-	const res = await client.query(`SELECT * FROM employee WHERE id = $1`, [
-		userId,
+	const res = await client.query(`SELECT * FROM employee WHERE work_email = $1`, [
+		req.email,
 	])
 	const result = res.rows[0]
 	const PersonalDetails = {
