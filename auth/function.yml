@@ -32,12 +32,12 @@ resetPassword:
               method: post
               cors: true
 
-newUserpassword:
-    handler: auth/newUserPassword.handler
+changePassword:
+    handler: auth/changePassword.handler
     role: ${env:LAMBDA_ROLE}
     events:
         - http:
-              path: /newUserPassword
+              path: /changePassword
               method: post
               cors: true
 

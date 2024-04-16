@@ -12,7 +12,7 @@ const { errorHandler } = require("../util/errorHandler")
 const reqSchema = z.object({
 	email: z.string(),
 	password: z.string(),
-	newpassword: z.string(),
+	newPassword: z.string(),
 })
 
 const cognitoClient = new CognitoIdentityProviderClient({
@@ -27,14 +27,8 @@ const updateInvitationStatus = `
 
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	const requestBody = JSON.parse(event.body)
+	const {email, password, newPassword } = JSON.parse(event.body)
 	const workEmail = requestBody.email
-	const req = {
-		email: requestBody.email,
-		password: requestBody.password,
-		newpassword: requestBody.newpassword,
-	}
-
 	const client = await connectToDatabase()
 
 	const inputAuth = {
@@ -42,8 +36,8 @@ exports.handler = middy(async (event, context) => {
 		ClientId: process.env.COGNITO_CLIENT_ID,
 		AuthFlow: "ADMIN_USER_PASSWORD_AUTH",
 		AuthParameters: {
-			USERNAME: req.email,
-			PASSWORD: req.password,
+			USERNAME: email,
+			PASSWORD: password,
 		},
 	}
 	const authResponse = await cognitoClient.send(
@@ -53,8 +47,8 @@ exports.handler = middy(async (event, context) => {
 		ChallengeName: "NEW_PASSWORD_REQUIRED",
 		ClientId: process.env.COGNITO_CLIENT_ID,
 		ChallengeResponses: {
-			USERNAME: req.email,
-			NEW_PASSWORD: req.newpassword,
+			USERNAME: email,
+			NEW_PASSWORD: newPassword,
 		},
 		Session: authResponse.Session,
 	}
