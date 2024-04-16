@@ -114,9 +114,9 @@ exports.handler = middy(async (event, context) => {
 			"Access-Control-Allow-Origin": "*",
 		},
 		body: JSON.stringify({
-			Result: PersonalDetails,
-			AccessToken: accessToken,
-			RefreshToken: refreshToken,
+			result: PersonalDetails,
+			accesstoken: accessToken,
+			refreshtoken: refreshToken,
 		}),
 	}
 })
