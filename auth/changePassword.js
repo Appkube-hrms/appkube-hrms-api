@@ -28,7 +28,7 @@ const updateInvitationStatus = `
 exports.handler = middy(async (event, context) => {
 	context.callbackWaitsForEmptyEventLoop = false
 	const {email, password, newPassword } = JSON.parse(event.body)
-	const workEmail = requestBody.email
+	const workEmail = email
 	const client = await connectToDatabase()
 
 	const inputAuth = {
